@@ -44,12 +44,20 @@ class heapdict(MutableMapping):
             l = (i << 1) + 1
             # calculate the offset of the right child
             r = (i + 1) << 1
-            if l < n and h[l][0] < h[i][0]:
-                low = l
+            if len(h[0][0]) == 1:
+                if l < n and h[l][0] < h[i][0]:
+                    low = l
+                else:
+                    low = i
+                if r < n and h[r][0] < h[low][0]:
+                    low = r
             else:
-                low = i
-            if r < n and h[r][0] < h[low][0]:
-                low = r
+                if l < n and h[l][0][0] < h[i][0][0]:
+                    low = l
+                else:
+                    low = i
+                if r < n and h[r][0][0] < h[low][0][0]:
+                    low = r
 
             if low == i:
                 break
@@ -61,8 +69,13 @@ class heapdict(MutableMapping):
         while i:
             # calculate the offset of the parent
             parent = (i - 1) >> 1
-            if self.heap[parent][0] < self.heap[i][0]:
-                break
+            if len(self.heap[parent][0]) == 1:
+                if self.heap[parent][0] < self.heap[i][0]:
+                    break
+            else:
+                if self.heap[parent][0][0] < self.heap[i][0][0]:
+                    break
+                    
             self._swap(i, parent)
             i = parent
 
