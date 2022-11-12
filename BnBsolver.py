@@ -12,6 +12,7 @@ import numpy as np
 import time
 import multiprocessing
 import heapdict as hd
+import copy
 
 def parse_graph(filename):
     # opens .graph file and parses contents
@@ -28,6 +29,7 @@ def parse_graph(filename):
         nodeID = [0]*(nNodes+1)
         # List of node adjacent edges
         nodeEdges = [0]*nNodes
+        nodeLabel = [0]*nNodes
 
         # Parse remainder of file
         for ii in range(0,nNodes):
@@ -37,9 +39,10 @@ def parse_graph(filename):
             nodeEdges[ii] = len(edge_data)
             adjacent[nodeID[ii]:nodeID[ii]+nodeEdges[ii]] = edge_data
             nodeID[ii+1] = nodeID[ii] + nodeEdges[ii]
+            nodeLabel[ii] = ii+1
         # remove extra value from nodeID list
         del(nodeID[-1])
-    return adjacent,nodeID,nodeEdges,nNodes,nEdges
+    return adjacent,nodeID,nodeEdges,nodeLabel,nNodes,nEdges
 
 def solveBnB(inputFile,outputFile,maxTime):
     # Start solution as a process
@@ -65,7 +68,7 @@ def solveBnB(inputFile,outputFile,maxTime):
     
 def _solveBnB(inputFile,outputFile,returnDict):
     # Read input file
-    adjacent,nodeID,nodeEdges,nNodes,nEdges = parse_graph(inputFile)
+    adjacent,nodeID,nodeEdges,nodeLabel,nNodes,nEdges = parse_graph(inputFile)
     returnDict['adjacent'] = adjacent
     returnDict['nodeID'] = nodeID
     returnDict['nodeEdges'] = nodeEdges
@@ -75,64 +78,87 @@ def _solveBnB(inputFile,outputFile,returnDict):
     bestCost = nNodes
     # Create first candidate with no nodes
     testDict = {
-        "adjacent": [], 
-        'nodes': [],
-        'nodeEdges': nodeEdges,
-        'lowerBound': lowerBound([],[],nodeEdges,nEdges)
+        'covered': 0,            # number of covered unique edges
+        'nodes': [],             # included nodes
+        'nodeLabel':nodeLabel,   # node labels
+        'adjacent': adjacent,    # List of all edges covered by each node
+        'nodeEdges': nodeEdges,  # number of uncovered edges covered by each node
+        'nodeID':nodeID          # index into nodeEdges for each node
     }
     # Create empty priority queue
     q = hd.heapdict()
-    q[0] = (lowerBound([],[],nodeEdges,nEdges),[],[],nodeEdges) # lower bound on cost to go, included edges (unique), included nodes, nodeEdges
+    q[0] = (lowerBound(testDict,nEdges),testDict)
     # while queue is not empty
     while q:
         # Choose current candidate with best cost to go
         u = q.popitem()
-        # Branch by either adding, or not adding that node
-        withNode, withoutNode = splitNode(u[1],nodeID)
+        # DEBUG
+        print(u[1][1])
+        # Branch by either adding, or not adding best node
+        withNode, withoutNode = splitNode(u[1][1])
         # Check to see if all edges are now covered
-        if len(withNode[1]) == nEdges:
+        if withNode['covered'] == nEdges:
             # If so, check cost vs current best
-            if len(withNode[2]) < bestCost:
-                bestCost = len(withNode[2])
+            if len(withNode['nodes']) < bestCost:
+                bestCost = len(withNode['nodes'])
         else:
             # If not check lower bound on cost to go
-            if withNode[0] + len(withNode[2]) < bestCost:
+            withCost = lowerBound(withNode,nEdges) + len(withNode['nodes'])
+            if withCost < bestCost:
                 # if minimum cost to go is less than current best add to queue
-                q[len(q)] = withNode
+                q[len(q)] = (withCost,withNode)
         # check lower bound on cost to go without node:
-        if withoutNode[0] + len(withoutNode[2]) < bestCost:
+        withoutCost = lowerBound(withoutNode,nEdges) + len(withoutNode['nodes'])
+        if withoutCost < bestCost:
             # if minimum cost to go is less than current best add to queue
-            q[len(q)] = withoutNode
+            q[len(q)] = (withoutCost,withoutNode)
     
 # NOTE: rewrite to "update lower bound" change input/output(?) to candidate tuple
-def lowerBound(adjacent, nodeID, nodeEdges,nEdges):
+def lowerBound(inDict,nEdges):
     # Calculates minimum number of nodes required to cover all remaining edges
-    nCovered = len(adjacent)
+    nCovered = inDict['covered']
     ii = 0
     # Add largest (most adjacent edges) nodes until number of edges is reached
     while nCovered < nEdges:
-        nCovered = nCovered + nodeEdges[ii]
+        nCovered = nCovered + inDict['nodeEdges'][ii]
         ii = ii + 1
     return ii
     
     
-# NOTE: candidate is a tuple with the format:
-# (lower bound on cost to go, included edges (unique), included nodes, nodeEdges)
-def splitNode(inputCandidate,nodeID):
+def splitNode(inputDict):
     # Create output with node selected
-    withNode = inputCandidate
-    # remove that nodes edges from nodeEdges
+    withNode = inputDict
+    
+    # Extract values for clarity
+    fromNode = withNode['nodeLabel'].pop(0)
+    fromEdges = withNode['nodeEdges'].pop(0)
+    fromID = withNode['nodeID'].pop(0)
     
     # Create output without node selected
-    withoutNode = withNode
+    # NOTE: THIS IS NOT THREAD SAFE!
+    withoutNode = copy.deepcopy(withNode)
+    
+    # for each uncovered edge from node
+    for toNode in withNode['adjacent'][fromID:fromID+fromEdges]:
+        # find index of node within list
+        #nodeInd = find(withNode['nodeLabel'] == toNode)
+        nodeInd = withNode['nodeLabel'].index(toNode)
+        # find index of nodeID within that nodes adjacent edges
+        #edgeInd = find(withNode['adjacent'][withNode['nodeID'][nodeInd]:withNode['nodeID'][nodeInd]+withNode['nodeEdges'][nodeInd]] == fromNode)
+        edgeInd = withNode['adjacent'][withNode['nodeID'][nodeInd]:withNode['nodeID'][nodeInd]+withNode['nodeEdges'][nodeInd]].index(fromNode)
+        # remove nodeLabel from that nodes Edges
+        del(withNode['adjacent'][withNode['nodeID'][nodeInd]+edgeInd])
+        # add in dummy value at end of current node edges to maintain list length
+        withNode['adjacent'].insert(withNode['nodeID'][nodeInd]+withNode['nodeEdges'][nodeInd]-1,0)
+        # NOTE: This *might* be able to be done faster by just shifting all edges after the one to be deleted to the left by 1
+        # subtract 1 from toNode's edges
+        withNode['nodeEdges'][nodeInd] = withNode['nodeEdges'][nodeInd] - 1
+        # check if that node has no remaining unique edges?
+    
     # add node to included nodes
-    withNode[2][len(withNode[2])] = nodeID
-    # for each unique edge from node
-    for toNode in curNodeEdges:
-        # remove nodeID from that nodes Edges
-        pass
-    # update lower bound on cost to go
-    withNode[0] = lowerBound(adjacent, nodeID, nodeEdges,nEdges)
+    withNode['nodes'].append(fromNode)
+    withNode['covered'] = withNode['covered'] + fromEdges
+    
     # Return candidates
     return withNode,withoutNode
 
