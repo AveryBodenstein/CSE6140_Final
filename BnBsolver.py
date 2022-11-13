@@ -23,7 +23,7 @@ def parse_graph(filename):
         nNodes, nEdges, weighted = graph_data[0], graph_data[1], graph_data[2]
 
         # Create empty list to hold values
-        adjacent = [0]*nEdges
+        adjacent = [[]]*nNodes
         # Create empty list to hold ID of each node in adjacent list
         nodeID = [0]*(nNodes+1)
         # List of node adjacent edges
@@ -36,12 +36,20 @@ def parse_graph(filename):
             # parse edge and weight
             edge_data = list(map(lambda x: int(x), tempLine.split()))
             nodeEdges[ii] = len(edge_data)
-            adjacent[nodeID[ii]:nodeID[ii]+nodeEdges[ii]] = edge_data
+            adjacent[ii] = edge_data
             nodeID[ii+1] = nodeID[ii] + nodeEdges[ii]
             nodeLabel[ii] = ii+1
         # remove extra value from nodeID list
         del(nodeID[-1])
-    return adjacent,nodeID,nodeEdges,nodeLabel,nNodes,nEdges
+        # sort by number of edges
+        test = sorted(zip(nodeEdges, nodeLabel, adjacent), key=lambda x: x[0],reverse=True)
+        # 'unzip'
+        nodeEdges, nodeLabel, adjacent = zip(*test)
+        nodeEdges = list(nodeEdges)
+        nodeLabel = list(nodeLabel)
+        adjacent = list(adjacent)
+        
+    return adjacent,nodeEdges,nodeLabel,nNodes,nEdges
 
 def solveBnB(inputFile,outputFile,maxTime):
     # Start solution as a process
@@ -64,15 +72,12 @@ def solveBnB(inputFile,outputFile,maxTime):
     # Extract value from function
     #print(f"Solver returned {returnDict['fVal']}")
     
-    
+
 def _solveBnB(inputFile,outputFile,returnDict):
     # Read input file
-    adjacent,nodeID,nodeEdges,nodeLabel,nNodes,nEdges = parse_graph(inputFile)
+    adjacent,nodeEdges,nodeLabel,nNodes,nEdges = parse_graph(inputFile)
     returnDict['adjacent'] = adjacent
-    returnDict['nodeID'] = nodeID
     returnDict['nodeEdges'] = nodeEdges
-    #print(f"adjacent: {adjacent}")
-    #print(f"nodeID: {nodeID}")
     # Initialize current best cost to requiring all nodes
     bestCost = nNodes + 1
     bestCover = 0
@@ -83,8 +88,7 @@ def _solveBnB(inputFile,outputFile,returnDict):
         'nodes': [],             # included nodes
         'nodeLabel':nodeLabel,   # node labels
         'adjacent': adjacent,    # List of all edges covered by each node
-        'nodeEdges': nodeEdges,  # number of uncovered edges covered by each node
-        'nodeID':nodeID          # index into nodeEdges for each node
+        'nodeEdges': nodeEdges
     }
     # Create empty priority queue
     q = hd.heapdict()
@@ -99,16 +103,19 @@ def _solveBnB(inputFile,outputFile,returnDict):
         
         #print(len(q))
         if (nIterations % 10000) == 0:
+            # pass
             print(nIterations)
+            print(len(q))
         nIterations = nIterations + 1
-        #if nIterations > 10000000:
-        #    return
+        # if nIterations > 50000:
+        #     print('Done')
+        #     return
         # Branch by either adding, or not adding best node
         withNode, withoutNode = splitNode(u[1][1])
         # DEBUG
         if withNode['covered'] > bestCover:
             bestCover = withNode['covered']
-            print(f"Best Cover: {withNode['covered']} : {withNode['nodes']}")
+            #print(f"Best Cover: {withNode['covered']} : {withNode['nodes']}")
         # if len(withNode['nodes']) > mostNodes:
         #     print(f"Most nodes used: {withNode['nodes']}")
         #     mostNodes = len(withNode['nodes'])
@@ -118,21 +125,30 @@ def _solveBnB(inputFile,outputFile,returnDict):
             # If so, check cost vs current best
             if len(withNode['nodes']) < bestCost:
                 bestCost = len(withNode['nodes'])
-                print('NEW BEST COST FOUND!!!')
+                print(f"NEW BEST COST FOUND!!! {len(withNode['nodes'])}")
         else:
             # If not check lower bound on cost to go
-            withCost = lowerBound(withNode,nEdges) + len(withNode['nodes'])
+            # withCost = lowerBound(withNode,nEdges) + len(withNode['nodes'])
+            withCost = lowerBound(withNode,nEdges) / (len(withNode['nodes'])+1)
+            # NOTE: This favors longer chains first, hopefully either getting to solutions or eleminating nodes
             if withCost < bestCost:
-                # if minimum cost to go is less than current best add to queue
-                q[nIterations] = (withCost,withNode)
+                # make sure it's not empty
+                if len(withNode['adjacent'][0]) != 0:
+                    # if minimum cost to go is less than current best add to queue
+                    q[nIterations] = (withCost,withNode)
+                    
         # check lower bound on cost to go without node:
-        withoutCost = lowerBound(withoutNode,nEdges) + len(withoutNode['nodes'])
+        # withoutCost = lowerBound(withoutNode,nEdges) + len(withoutNode['nodes'])
+        withoutCost = lowerBound(withoutNode,nEdges) / (len(withoutNode['nodes'])+1)
+        # NOTE: This favors longer chains first, hopefully either getting to solutions or eleminating nodes
         if withoutCost < bestCost:
-            # if minimum cost to go is less than current best add to queue
-            q[nIterations+0.5] = (withoutCost,withoutNode)
+            # make sure it's not empty
+            if len(withoutNode['adjacent'][0]) != 0:
+                # if minimum cost to go is less than current best add to queue
+                q[nIterations+0.5] = (withoutCost,withoutNode)
     print('Done!')
+    print(f"{nIterations} Iterations")
     
-# NOTE: rewrite to "update lower bound" change input/output(?) to candidate tuple
 def lowerBound(inDict,nEdges):
     # Calculates minimum number of nodes required to cover all remaining edges
     nCovered = inDict['covered']
@@ -147,8 +163,7 @@ def lowerBound(inDict,nEdges):
         return nEdges
     else:
         return ii
-    
-    
+
 def splitNode(inputDict):
     # Create output with node selected
     withNode = inputDict
@@ -156,37 +171,40 @@ def splitNode(inputDict):
     # Extract values for clarity
     fromNode = withNode['nodeLabel'].pop(0)
     fromEdges = withNode['nodeEdges'].pop(0)
-    fromID = withNode['nodeID'].pop(0)
+    adjacent = withNode['adjacent'].pop(0)
     
     # Create output without node selected
     withoutNode = {
         'covered': withNode['covered'],             # number of covered unique edges
         'nodes': withNode['nodes'].copy(),          # included nodes
         'nodeLabel':withNode['nodeLabel'].copy(),   # node labels
-        'adjacent': withNode['adjacent'].copy(),    # List of all edges covered by each node
-        'nodeEdges': withNode['nodeEdges'].copy(),  # number of uncovered edges covered by each node
-        'nodeID': withNode['nodeID'].copy()         # index into nodeEdges for each node
+        'adjacent': [[]]*len(withNode['nodeLabel']),    # List of all edges covered by each node
+        'nodeEdges': withNode['nodeEdges'].copy()
     }
     
-    # for each uncovered edge from node
-    for toNode in withNode['adjacent'][fromID:fromID+fromEdges]:
+    # ensure a true copy of each sublist is made
+    for ii in range(0,len(withNode['nodeLabel'])):
+        withoutNode['adjacent'][ii] = withNode['adjacent'][ii].copy()
+    
+    for toNode in adjacent:        
         try:
             # find index of node within list
             nodeInd = withNode['nodeLabel'].index(toNode)
         except(ValueError):
             # node already deleted
             continue
-        # find index of nodeID within that nodes adjacent edges
-        edgeInd = withNode['adjacent'][withNode['nodeID'][nodeInd]:withNode['nodeID'][nodeInd]+withNode['nodeEdges'][nodeInd]].index(fromNode)
-        # remove nodeLabel from that nodes Edges
-        del(withNode['adjacent'][withNode['nodeID'][nodeInd]+edgeInd])
-        # add in dummy value at end of current node edges to maintain list length
-        withNode['adjacent'].insert(withNode['nodeID'][nodeInd]+withNode['nodeEdges'][nodeInd]-1,0)
-        # NOTE: This *might* be able to be done faster by just shifting all edges after the one to be deleted to the left by 1
+        # remove fromNode from that node's edges
+        withNode['adjacent'][nodeInd].remove(fromNode)
         # subtract 1 from toNode's edges
         withNode['nodeEdges'][nodeInd] = withNode['nodeEdges'][nodeInd] - 1
-        # check if that node has no remaining unique edges?
-        
+    
+    # sort by number of edges
+    test = sorted(zip(withNode['nodeEdges'], withNode['nodeLabel'], withNode['adjacent']), key=lambda x: x[0],reverse=True)
+    # 'unzip'
+    withNode['nodeEdges'], withNode['nodeLabel'], withNode['adjacent'] = zip(*test)
+    withNode['nodeEdges'] = list(withNode['nodeEdges'])
+    withNode['nodeLabel'] = list(withNode['nodeLabel'])
+    withNode['adjacent'] = list(withNode['adjacent'])
     
     # add node to included nodes
     withNode['nodes'].append(fromNode)
@@ -198,6 +216,8 @@ def splitNode(inputDict):
 if __name__ == '__main__':
     testDict = dict()
     #_solveBnB('./DATA-1/dummy1.graph','./test.out',testDict)
-    _solveBnB('./DATA-1/karate.graph','./test.out',testDict)
-    #_solveBnB('./DATA-1/jazz.graph','./test.out',testDict)
+    # _solveBnB('./DATA-1/karate.graph','./test.out',testDict)
+    _solveBnB('./DATA-1/jazz.graph','./test.out',testDict)
+    # _solveBnB('./DATA-1/email.graph','./test.out',testDict)
+    # _solveBnB('./DATA-1/star2.graph','./test.out',testDict)
     
