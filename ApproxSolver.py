@@ -44,6 +44,11 @@ def _solveApprox(inputFile,outputFile,returnDict):
     for ii in range(0,nNodes):
         #print(f"{ii},{nodeLabel[ii]},{nodeEdges[ii]}")
         q[nodeLabel[ii]] = [nodeEdges[ii],adjacent[ii]]
+    # solve
+    coverSet = _solveApprox_nofile(q,nNodes,nEdges)
+    return coverSet
+
+def _solveApprox_nofile(q,nNodes,nEdges):
     # while graph not covered
     coveredEdges = 0
     coverSet = []
@@ -79,14 +84,55 @@ def _solveApprox(inputFile,outputFile,returnDict):
         #print(f"removing {curVertex[0]}")
         q.pop(curVertex[0])
     return coverSet
-        
-        
+    
+def _solveApprox_nofile_withcheck(q,nNodes,nEdges):
+    # while graph not covered
+    coveredEdges = 0
+    coverSet = []
+    while coveredEdges < nEdges and len(q)>0:
+        #print(coveredEdges)
+        # select vertex of minimum degree
+        curVertex = q.peekitem()
+        #print(f"Selected {curVertex[0]}")
+        # extract values for clarity
+        #curLabel = curVertex[0]
+        #curNEdges = curVertex[1][0]
+        curNeighbors = curVertex[1][1].copy()
+        #print(f"neighbors: {curNeighbors}")
+        # Add all neighbors to cover
+        for node in curNeighbors:
+            if node in q:
+                # add label to cover set
+                coverSet.append(node)
+                # pop that node from queue
+                #print(f"removing {node}")
+                tempNode = q.pop(node)
+                # add that nodes unique edges to covered set
+                coveredEdges = coveredEdges + tempNode[0]
+                #print(coveredEdges)
+                # remove edges from target nodes
+                for subNode in tempNode[1]:
+                    if node in q:
+                        # update number of nodes
+                        q[subNode][0] = q[subNode][0] - 1
+                        # remove origin node from neighbors
+                        #print(f"before: {subNode}: {q[subNode]}")
+                        q[subNode][1].remove(node)
+                        #print(f"after: {subNode}: {q[subNode]}")
+        # remove original vertex
+        #print(f"removing {curVertex[0]}")
+        q.pop(curVertex[0])
+    if coveredEdges >= nEdges:
+        return coverSet
+    else:
+        return [-1]
+
 if __name__ == "__main__":
     testDict = dict()
     # _solveApprox('./DATA-1/dummy1.graph','./test.out',testDict)
-    coverSet = _solveApprox('./DATA-1/karate.graph','./test.out',testDict)
-    #_solveApprox('./DATA-1/jazz.graph','./test.out',testDict)
-    # _solveApprox('./DATA-1/email.graph','./test.out',testDict)
-    # _solveApprox('./DATA-1/star2.graph','./test.out',testDict)
+    #coverSet = _solveApprox('./DATA-1/karate.graph','./test.out',testDict)
+    coverSet = _solveApprox('./DATA-1/jazz.graph','./test.out',testDict)
+    #coverSet =  _solveApprox('./DATA-1/email.graph','./test.out',testDict)
+    #coverSet = _solveApprox('./DATA-1/star2.graph','./test.out',testDict)
     
     print(len(coverSet))

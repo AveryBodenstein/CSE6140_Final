@@ -11,6 +11,7 @@ import time
 import multiprocessing
 import heapdict as hd
 from commonLib import parse_graph
+from ApproxSolver import _solveApprox_nofile_withcheck as appSolve
 
 def solveBnB(inputFile,outputFile,maxTime):
     # Start solution as a process
@@ -54,6 +55,7 @@ def _solveBnB(inputFile,outputFile,returnDict):
     # Create empty priority queue
     q = hd.heapdict()
     q[0] = [lowerBound(testDict,nEdges),testDict]
+    print(f"Initial Heuristic Bound: {q[0][0]}")
     # while queue is not empty
     nIterations = 0
     while q:
@@ -63,7 +65,7 @@ def _solveBnB(inputFile,outputFile,returnDict):
         #print(u[1][1])
         
         #print(len(q))
-        if (nIterations % 10000) == 0:
+        if (nIterations % 1000) == 0:
             # pass
             print(nIterations)
             print(len(q))
@@ -89,8 +91,8 @@ def _solveBnB(inputFile,outputFile,returnDict):
                 print(f"NEW BEST COST FOUND!!! {len(withNode['nodes'])}")
         else:
             # If not check lower bound on cost to go
-            # withCost = lowerBound(withNode,nEdges) + len(withNode['nodes'])
-            withCost = lowerBound(withNode,nEdges) / (len(withNode['nodes'])+1)
+            withCost = lowerBound(withNode,nEdges) + len(withNode['nodes'])
+            #withCost = lowerBound(withNode,nEdges) / (len(withNode['nodes'])+1)
             # NOTE: This favors longer chains first, hopefully either getting to solutions or eleminating nodes
             if withCost < bestCost:
                 # make sure it's not empty
@@ -99,8 +101,8 @@ def _solveBnB(inputFile,outputFile,returnDict):
                     q[nIterations] = (withCost,withNode)
                     
         # check lower bound on cost to go without node:
-        # withoutCost = lowerBound(withoutNode,nEdges) + len(withoutNode['nodes'])
-        withoutCost = lowerBound(withoutNode,nEdges) / (len(withoutNode['nodes'])+1)
+        withoutCost = lowerBound(withoutNode,nEdges) + len(withoutNode['nodes'])
+        #withoutCost = lowerBound(withoutNode,nEdges) / (len(withoutNode['nodes'])+1)
         # NOTE: This favors longer chains first, hopefully either getting to solutions or eleminating nodes
         if withoutCost < bestCost:
             # make sure it's not empty
@@ -110,7 +112,7 @@ def _solveBnB(inputFile,outputFile,returnDict):
     print('Done!')
     print(f"{nIterations} Iterations")
     
-def lowerBound(inDict,nEdges):
+def lowerBound_bak(inDict,nEdges):
     # Calculates minimum number of nodes required to cover all remaining edges
     nCovered = inDict['covered']
     ii = 0
@@ -124,6 +126,20 @@ def lowerBound(inDict,nEdges):
         return nEdges
     else:
         return ii
+
+def lowerBound(inDict,nEdges):
+    nCovered = inDict['covered']
+    # create heap
+    tempHeap = hd.heapdict()
+    for ii,nodeLabel in enumerate(inDict['nodeLabel']):
+        #print(f"{nodeLabel} : {inDict['nodeEdges'][ii]} : {inDict['adjacent'][ii][0:inDict['nodeEdges'][ii]]}")
+        tempHeap[nodeLabel] = [inDict['nodeEdges'][ii],inDict['adjacent'][ii][0:inDict['nodeEdges'][ii]].copy()]
+    
+    huerResult = appSolve(tempHeap,ii+1,nEdges-nCovered)
+    if huerResult[0] == -1:
+        return np.inf
+    ratio = 2 # I don't understand the maximum degree greedy approximation ratio.
+    return ratio*len(huerResult)
 
 def splitNode(inputDict):
     # Create output with node selected
@@ -177,7 +193,7 @@ def splitNode(inputDict):
 if __name__ == '__main__':
     testDict = dict()
     #_solveBnB('./DATA-1/dummy1.graph','./test.out',testDict)
-    # _solveBnB('./DATA-1/karate.graph','./test.out',testDict)
+    #_solveBnB('./DATA-1/karate.graph','./test.out',testDict)
     _solveBnB('./DATA-1/jazz.graph','./test.out',testDict)
     # _solveBnB('./DATA-1/email.graph','./test.out',testDict)
     # _solveBnB('./DATA-1/star2.graph','./test.out',testDict)
