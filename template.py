@@ -62,7 +62,7 @@ if __name__ == '__main__':
     if algorithmStr == 'BnB':
         solveBnB(inputFile,outputFile,maxTime)
     elif algorithmStr == 'Approx':
-        solveApprox(inputFile,outputFile,maxTime,initSeed)
+        solveApprox(inputFile,outputFile,maxTime)
     elif algorithmStr == 'LS1':
         solveLS1(inputFile,outputFile,maxTime,initSeed)
     elif algorithmStr == 'LS2':
