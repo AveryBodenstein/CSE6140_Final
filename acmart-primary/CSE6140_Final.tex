@@ -330,7 +330,7 @@ The construction heuristic approach implemented here is the \textit{Greedy Indep
 	\Return C\;
 \end{algorithm}
 
-Where N(u) is the neighborhood (all adjacent vertices to) u.
+Where N(u) is the neighborhood (all adjacent vertices to) u.\\
 
 \begin{algorithm}[H]
 	\caption{Detailed Implementation}
@@ -353,6 +353,8 @@ Where N(u) is the neighborhood (all adjacent vertices to) u.
 \end{algorithm}
 
 \subsubsection{Algorithm Analysis}\label{app_alg_analy}
+
+-\\
 
 Additional description\\
 
@@ -452,6 +454,31 @@ a detailed description of your platform (CPU, RAM, language, compiler, etc.),
 experimental procedure, evaluation criteria and obtained results (plots, tables, etc.). What is the
 lower bound on the optimal solution quality that you can drive from the results of your approximation
 algorithm and how far is it from the true optimum? How about from your branch-and-bound?
+
+\begin{table}[H]
+	\caption{Algorithm Performance}
+	\label{tab:freq}
+	\begin{tabular}{|l|c|c|c|c|c|c|c|c|c|c|c|c|c|}
+		\toprule
+		&\multicolumn{3}{c|}{Branch and Bound}&\multicolumn{3}{c|}{Construction Heuristic}&\multicolumn{3}{c|}{Local Search 1}&\multicolumn{3}{c|}{Local Search 2}\\
+		\midrule
+		Dataset&Time(s)&VC Value&RelErr&Time(s)&VC Value&RelErr&Time(s)&VC Value&RelErr&Time(s)&VC Value&RelErr&\\
+		\midrule
+		jazz&&&&0.0037&159&0.063&&&&&&\\
+		karate&&&&0.0005&14&0.00&&&&&&\\
+		football&&&&0.0014&95&0.011&&&&&&\\
+		as-22july06&&&&0.21&3303&0.00&&&&&&\\
+		hep-th&&&&0.098&3943&0.0043&&&&&&\\
+		star&&&&0.24&7069&0.024&&&&&&\\
+		star2&&&&0.21&4674&0.029&&&&&&\\
+		netscience&&&&0.017&901&0.0022&&&&&&\\
+		email&&&&0.015&604&0.017&&&&&&\\
+		delaunay n10&&&&0.012&733&0.043&&&&&&\\
+		power&&&&0.051&2226&0.010&&&&&&\\
+		\bottomrule
+	\end{tabular}
+\end{table}
+
 
 \section{Discussion}
 

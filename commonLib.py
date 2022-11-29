@@ -79,7 +79,7 @@ def write_sol(filename, coverSet):
 # logs current best solution
 def log_sol(filename, quality, timestamp):
     with open(f"{filename}.trace",'a') as outFile:
-        outFile.write(f"{timestamp:0.2f},{quality}\n")
+        outFile.write(f"{timestamp:0.4f},{quality}\n")
     
     
     

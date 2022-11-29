@@ -43,7 +43,7 @@ if __name__ == '__main__':
     inst = inst[-1].split('.')
     inst = inst[0]
     # if algorithm is deterministic don't add seed to filename
-    if args.alg in ['BnB']:
+    if args.alg in ['BnB','Approx']:
         outputFile = f"{outDir}/{inst}_{args.alg}_{args.time}"
     else:
         outputFile = f"{outDir}/{inst}_{args.alg}_{args.time}_{args.seed}"
