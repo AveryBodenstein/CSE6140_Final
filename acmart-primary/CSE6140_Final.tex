@@ -256,87 +256,109 @@ cite any sources of information that you used to inform your algorithm design
 
 \subsubsection{Description}
 
-\lipsum[1]
+The branch and bound approach is a non-polynomial time algorithm which is guaranteed to return an optimal solution. The BnB algorithm at worst does not perform any better than a brute force search, but can have significant performance gains where portions of the search space can be pruned. This pruning is performed by iteratively defining sub-problems and determining lower bounds on the cost to go for these sub-problems. If the best possible cost for a sub-problem exceeds the current best cost that subproblem (and therefore all it's derivatives) can be pruned from the search space. The sub-problems presented in this algorithm are defined based on inclusion or exclusion of nodes from the cover set. 
 
+\newpage
 \subsubsection{Pseudo Code}
 
+-\\
+
+The overall branch and bound algorithm has the following structure:\\
+
 \begin{algorithm}[H]
-	\caption{merge}
+	\caption{Branch and Bound}
 	\SetAlgoLined
-	\KwData{B,C}
-	$n_a$ = 0\;
-	i = len(B)\;
-	j = len(C)\;
-	A = [0]*(i+j-2)\;
-	\For{l = i+j-2; l $\geq$ 0; l-=1}{
-		\uIf{i == 0}{
-			A[0:l] = C[0:j]\;
-			return (A,$n_a$)
-		}
-		\uElseIf{j == 0}{
-			A[0:l] = B[0:i]\;
-			return (A,$n_a$)
-		}
-		
-		\uIf{C[j-1] $\geq$ B[i-1] }{
-			A[l] = C[j-1]\;
-			j = j-1\;
-		}
-		\uElse{
-			A[l] = B[i-1]\;
-			$n_a$ = $n_a$ + j\;
-			i = i-1\;
+	\KwData{P}
+	
+	$F \leftarrow {(\emptyset,P)}$\;
+	$B \leftarrow {(+\infty,(\emptyset,P))}$\;
+	\While{F not empty}{
+		choose $(X,Y)$ in F\;
+		expand $(X,Y)$\;
+		let $(x_1,y_1)$, $(x_2,y_2)$ be new configurations\;
+		\ForEach{$(x_i,y_i)$}{
+			\If{solution found}{
+				\If{cost($x_i$) $<$ B}{
+					$B \leftarrow ($cost$(x_i),(x_i,y_i))$\;
+				}
+			}
+			\If{not dead end}{
+				\If{lowerBound($x_i$) $<$ B}{
+					$F \leftarrow F \cup {(x_i,y_i)}$\;
+				}
+			}
 		}
 	}
-	return (A,$n_a$)
+	
+	return (B)
 \end{algorithm}
+
+where P is the graph, $x_i$ are all the vertices in the cover set, and $y_i$ are the vertices remaining for selection. There are four sub functions, "choose", "expand", "checkSolution", "checkDeadEnd", and "lowerBound". In the implementation presented here, choose selects the subproblem in F with the lowest lowerBound on cost to go. Expand takes that subproblem and returns two subproblems, one with the node with fewest unique edges selected and one without that node as a possible selection. checkSolution checks to see if all edges are covered by $x_i$. checkDeadEnd checks if $x_i \cup y_i$ covers all edges. Finally lowerBound runs the heuristic algorithm described in this report on $y_i$ then divides by the approximation ratio (2) to get a lower bound on the possible additional nodes required to cover all edges. This is then added to the number of nodes already in $x_i$.
+
+
+
 
 \subsubsection{Algorithm Analysis}
 
-\lipsum[1]
+Additional description\\
+
+Gives exact solution\\
+
+Time and space complexity\\
 
 \subsection{Construction Heuristic}
 
 \subsubsection{Description}
 
-\lipsum[1]
+The construction heuristic approach implemented here is the \textit{Greedy Independent Cover (GIC)} algorithm, presented in Halld\'{o}rsson and Radhakrishnan [1994] for the independent set problem. This is an approximation approach which runs in polynomial time and yields an answer within a bound of the optimal solution. Runtime and Approximation Ratio analysis is provided in \ref{app_alg_analy}. This algorithm lends itself well to use with priority queues. All vertices in the graph are stored in a priority queue, ordered by the number of adjacent edges remaining in G: q[nodeLabel] = [nEdges,destinationNodes]. At each iteration the vertex with the fewest remaining edges is popped from the queue. Each of it's neighbors is then removed from the queue and added to the cover set. For each remaining edge in each neighbor, the source node is removed from the list of edges in the destination node and the number of edges in the destination node is lowered by one. This process continues until all edges are covered.
 
 \subsubsection{Pseudo Code}
 
+-\\
+
 \begin{algorithm}[H]
-	\caption{merge}
+	\caption{Greedy Independent Cover (GIC)}
 	\SetAlgoLined
-	\KwData{B,C}
-	$n_a$ = 0\;
-	i = len(B)\;
-	j = len(C)\;
-	A = [0]*(i+j-2)\;
-	\For{l = i+j-2; l $\geq$ 0; l-=1}{
-		\uIf{i == 0}{
-			A[0:l] = C[0:j]\;
-			return (A,$n_a$)
-		}
-		\uElseIf{j == 0}{
-			A[0:l] = B[0:i]\;
-			return (A,$n_a$)
-		}
-		
-		\uIf{C[j-1] $\geq$ B[i-1] }{
-			A[l] = C[j-1]\;
-			j = j-1\;
-		}
-		\uElse{
-			A[l] = B[i-1]\;
-			$n_a$ = $n_a$ + j\;
-			i = i-1\;
-		}
+	\KwData{G = (V,E)}
+	C $\leftarrow$ $\emptyset$\;
+	\While{$E \not= \emptyset$ }
+	{
+		select a vertex u of minimum degree\;
+		C $\leftarrow$ C $\cup$ N(u)\;
+		V $\leftarrow$ V - (N(u) $\cup$ {u})\;
 	}
-	return (A,$n_a$)
+	\Return C\;
 \end{algorithm}
 
-\subsubsection{Algorithm Analysis}
+Where N(u) is the neighborhood (all adjacent vertices to) u.
 
-\lipsum[1]
+\begin{algorithm}[H]
+	\caption{Detailed Implementation}
+	\SetAlgoLined
+	\KwData{q,nEdges}
+	C $\leftarrow$ 0\;
+	\While{$C <$ nEdges }
+	{
+		u $\leftarrow$ q.peek()\;
+		\ForEach{neigbor i in N(u)}{
+			C $\leftarrow$ C + {q[i][0]}\;
+			\ForEach{edge (i,j) in neighbor}{
+				q[j][0] $\leftarrow$ q[j][0] - 1\;
+				q[j][1] $\leftarrow$ q[j][1] - $\{i\}$\;
+			}
+		} 
+		q = q - u\;
+	}
+	\Return C\;
+\end{algorithm}
+
+\subsubsection{Algorithm Analysis}\label{app_alg_analy}
+
+Additional description\\
+
+Approximation ratio discussion\\
+
+Time and space complexity\\
 
 \subsection{Local Search 1 (specific descriptor)}
 
