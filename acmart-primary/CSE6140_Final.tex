@@ -310,7 +310,7 @@ Time and space complexity\\
 
 \subsubsection{Description}
 
-The construction heuristic approach implemented here is the \textit{Greedy Independent Cover (GIC)} algorithm, presented in Halld\'{o}rsson and Radhakrishnan [1994] for the independent set problem. This is an approximation approach which runs in polynomial time and yields an answer within a bound of the optimal solution. Runtime and Approximation Ratio analysis is provided in \ref{app_alg_analy}. This algorithm lends itself well to use with priority queues. All vertices in the graph are stored in a priority queue, ordered by the number of adjacent edges remaining in G: q[nodeLabel] = [nEdges,destinationNodes]. At each iteration the vertex with the fewest remaining edges is popped from the queue. Each of it's neighbors is then removed from the queue and added to the cover set. For each remaining edge in each neighbor, the source node is removed from the list of edges in the destination node and the number of edges in the destination node is lowered by one. This process continues until all edges are covered.
+The construction heuristic approach implemented here is the \textit{Greedy Independent Cover (GIC)} algorithm, presented in Halld\'{o}rsson and Radhakrishnan [1994] \cite{Hall97} for the independent set problem. This is an approximation approach which runs in polynomial time and yields an answer within a bound of the optimal solution. Runtime and Approximation Ratio analysis is provided in \ref{app_alg_analy}. This algorithm lends itself well to use with priority queues. All vertices in the graph are stored in a priority queue, ordered by the number of adjacent edges remaining in G: q[nodeLabel] = [nEdges,destinationNodes]. At each iteration the vertex with the fewest remaining edges is popped from the queue. Each of it's neighbors is then removed from the queue and added to the cover set. For each remaining edge in each neighbor, the source node is removed from the list of edges in the destination node and the number of edges in the destination node is lowered by one. This process continues until all edges are covered.
 
 \subsubsection{Pseudo Code}
 
@@ -356,11 +356,21 @@ Where N(u) is the neighborhood (all adjacent vertices to) u.\\
 
 -\\
 
-Additional description\\
+As discussed in Delbot and Laforest [2010] \cite{Fran10} the Greedy Independent Cover algorithm performs extremely well. As can be seen in table \ref{table:alg_perf} the relative error for GIC never exceeds 6\% (and this is on the Jazz graph where the estimated solution is only 1 node larger than the optimal solution). However, the disadvantage of GIC is that the worst case performance is relatively poor. As shown in Avis and Imamura [2007] \cite{Avis06}, the approximation ratio is at least $\frac{\sqrt{\Delta}}{2}$ where $\Delta$ is the maximum degree in G.
 
-Approximation ratio discussion\\
+Figure \ref{fig:approx_comp} shows a comparison between the approximation ratios of several common algorithms described in \cite{Fran10}. Note that while GIC performs quite well, it's approximation ratio exceeds Depth First Search, or either of the Edge Deletion bounds for any $\Delta$ above 16.
 
-Time and space complexity\\
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.8\linewidth]{ApproxRatioComp.png}
+	\caption{Comparison of approximation ratios between several Vertex Cover heuristics}
+	\Description{Comparison of approximation ratios between several Vertex Cover heuristics}
+	\label{fig:approx_comp}
+\end{figure}
+
+
+
+The time complexity of the GIC algorithm as implemented is $O(n^2)$ where n is the number of nodes. As each node is selected via the minimum cardinality, at worst it has zero neighbors, so there would be at worst $n$ node selections. However in this case there would be 0 edge updates. For every neighbor that is present there are edge updates equal to the neighbors' cardinality. This can be at most $n-i$, where $i$ is the number of previous node selections. The complete complexity is then $O(\frac{n}{2}(n+1))$.
 
 \subsection{Local Search 1 (specific descriptor)}
 
@@ -477,6 +487,7 @@ algorithm and how far is it from the true optimum? How about from your branch-an
 		power&&&&0.051&2226&0.010&&&&&&\\
 		\bottomrule
 	\end{tabular}
+\label{table:alg_perf}
 \end{table}
 
 
@@ -602,36 +613,7 @@ command in the {\bfseries preamble} (before the command
 \end{verbatim}
 
 
-  Some examples.  A paginated journal article \cite{Abril07}, an
-  enumerated journal article \cite{Cohen07}, a reference to an entire
-  issue \cite{JCohen96}, a monograph (whole book) \cite{Kosiur01}, a
-  monograph/whole book in a series (see 2a in spec. document)
-  \cite{Harel79}, a divisible-book such as an anthology or compilation
-  \cite{Editor00} followed by the same example, however we only output
-  the series if the volume number is given \cite{Editor00a} (so
-  Editor00a's series should NOT be present since it has no vol. no.),
-  a chapter in a divisible book \cite{Spector90}, a chapter in a
-  divisible book in a series \cite{Douglass98}, a multi-volume work as
-  book \cite{Knuth97}, a couple of articles in a proceedings (of a
-  conference, symposium, workshop for example) (paginated proceedings
-  article) \cite{Andler79, Hagerup1993}, a proceedings article with
-  all possible elements \cite{Smith10}, an example of an enumerated
-  proceedings article \cite{VanGundy07}, an informally published work
-  \cite{Harel78}, a couple of preprints \cite{Bornmann2019,
-    AnzarootPBM14}, a doctoral dissertation \cite{Clarkson85}, a
-  master's thesis: \cite{anisi03}, an online document / world wide web
-  resource \cite{Thornburg01, Ablamowicz07, Poker06}, a video game
-  (Case 1) \cite{Obama08} and (Case 2) \cite{Novak03} and \cite{Lee05}
-  and (Case 3) a patent \cite{JoeScientist001}, work accepted for
-  publication \cite{rous08}, 'YYYYb'-test for prolific author
-  \cite{SaeediMEJ10} and \cite{SaeediJETC10}. Other cites might
-  contain 'duplicate' DOI and URLs (some SIAM articles)
-  \cite{Kirschmer:2010:AEI:1958016.1958018}. Boris / Barbara Beeton:
-  multi-volume works as books \cite{MR781536} and \cite{MR781537}. A
-  couple of citations with DOIs:
-  \cite{2004:ITE:1009386.1010128,Kirschmer:2010:AEI:1958016.1958018}. Online
-  citations: \cite{TUGInstmem, Thornburg01, CTANacmart}.
-  Artifacts: \cite{R} and \cite{UMassCitations}.
+  Some examples.  A paginated journal article \cite{Fran10} \cite{Avis06} \cite{Hall97}
 
 \section{Acknowledgments}
 
@@ -667,7 +649,7 @@ To Robert, for the bagels and explaining CMYK and color spaces.
 %% The next two lines define the bibliography style to be used, and
 %% the bibliography file.
 \bibliographystyle{ACM-Reference-Format}
-\bibliography{sample-base}
+\bibliography{sample-base.bib}
 
 
 \end{document}

@@ -35,25 +35,26 @@ legend('Maximum Degree Greedy (MDG)','Greedy Independant Cover (GIC)','Depth Fir
 
 
 figure
-subplot(3,1,1)
+subplot(2,1,1)
 semilogx(n,MDG)
 hold on
 semilogx(n,GIC)
 semilogx(n,LL)
-% semilogx(n,LR)
+semilogx(n,LR)
 xlabel('Maximimum Degree (\Delta)')
 ylabel('Approximation Ratio')
 grid minor
 legend('Maximum Degree Greedy (MDG)','Greedy Independant Cover (GIC)','List Left (LL)','List Right (LR)','location','best')
+ylim([0,20])
 
-subplot(3,1,2)
+subplot(2,1,2)
 plot(epsilon,EDa)
 hold on
 plot(epsilon,EDm)
 xlabel('Degree Ratio (\epsilon)')
 grid minor
 legend('Edge Deletion (average)','Edge Deletion (minimum)','location','best')
+ylim([0,2.5])
 
-subplot(3,1,3)
 
 
