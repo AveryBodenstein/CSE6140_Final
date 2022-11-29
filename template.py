@@ -50,8 +50,8 @@ if __name__ == '__main__':
         initSeed = int(args.seed)
             
     # Should we do this?
-    Path(f"{outputFile}.sol").touch()
-    Path(f"{outputFile}.trace").touch()
+    #Path(f"{outputFile}.sol").touch()
+    #Path(f"{outputFile}.trace").touch()
 
     # Assign variables for clarity 
     algorithmStr = args.alg
