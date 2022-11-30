@@ -124,10 +124,27 @@ class heapdict(MutableMapping):
         return (self.heap[0][1], self.heap[0][0])
    
     def copy(self):
+        # create new heapdict
         h  = self.__class__()
-        for key in self.d:
-            h.d[self.d[key][1]] = [self.d[key][0].copy(),self.d[key][1],self.d[key][2]]
-        h.heap = self.heap.copy()
+        # this is a horrible bodge
+        if len(self.d) < 1:
+            return h
+        test = self.peekitem()[1]
+        if type(test) is list:
+            if type(test[0]) is list:
+                raise
+            for key in self.d:
+                tempList = []
+                for sublist in self.d[key][0]:
+                    if type(sublist) is list:
+                        tempList.append(sublist.copy())
+                    else:
+                        tempList.append(sublist)
+                h[key] = tempList
+        else:
+            for key in self.d:
+                h.d[self.d[key][1]] = [self.d[key][0].copy(),self.d[key][1],self.d[key][2]]
+            h.heap = self.heap.copy()
         return h
 
 del doc
