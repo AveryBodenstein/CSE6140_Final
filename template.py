@@ -12,7 +12,7 @@ import sys, argparse
 from pathlib import Path
 
 #   Import solvers
-from BnBsolver import solveBnB
+from BnBsolver_r2 import solveBnB
 from ApproxSolver import solveApprox
 from LS1solver import solveLS1
 from LS2solver import solveLS2

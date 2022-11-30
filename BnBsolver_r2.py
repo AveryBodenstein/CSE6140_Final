@@ -7,12 +7,13 @@ Branch and Bound Vertex Cover Solver
 """
 
 #import numpy as np
-#import time
+import time
 import multiprocessing
 import heapdict as hd
-from commonLib import parse_graph, parse_graph_hd
-from ApproxSolver import _solveApprox_nofile 
+from commonLib import parse_graph_hd, write_sol ,log_sol
+from ApproxSolver import _solveApprox_nofile
 import math
+import os
 
 def solveBnB(inputFile,outputFile,maxTime):
     # Start solution as a process
@@ -26,44 +27,49 @@ def solveBnB(inputFile,outputFile,maxTime):
     
     # If thread is still active
     if p.is_alive():
-        print(f"Maximum Computation Time Exceeded, max time seen: {returnDict['timeSeen']}")
+        print("Maximum Computation Time Exceeded")
     
         # Terminate solver
         p.terminate()
         p.join()
     
-    # Extract value from function
-    #print(f"Solver returned {returnDict['fVal']}")
+    # Write final value to solution file
+    if os.path.exists(f"{outputFile}.trace"):
+        os.remove(f"{outputFile}.trace")
+    write_sol(outputFile,returnDict['coverSet'][-1])
+    for (soln,solTime) in zip(returnDict['coverSet'],returnDict['solTime']):
+        log_sol(outputFile,len(soln),solTime)
     
 
 def _solveBnB(inputFile,outputFile,returnDict):
     
+    # log start time
+    startTime = time.perf_counter()
     # parse graph
     subproblem, nNodes, nEdges = parse_graph_hd(inputFile)
     
     # get approximation via heuristic
     initSol = _solveApprox_nofile(subproblem.copy(),nNodes,nEdges)
-    print(f"Heuristic Solution: {initSol}")
+    returnDict['coverSet'] = [initSol]
+    returnDict['solTime'] = [time.perf_counter()-startTime]
+    
+    #print(f"Heuristic Solution: {initSol}")
     
     # Create empty priority queue of partial solutions
     q = hd.heapdict()
     q[0] = [lowerBound(subproblem,nEdges),[subproblem,[],0]]
-    print(f"Initial Heuristic Lower Bound: {q[0][0]}")
+    #print(f"Initial Heuristic Lower Bound: {q[0][0]}")
     # while queue is not empty
     nIterations = 0
     bestCover = 0
-    bestCost = len(initSol)+5
+    bestCost = len(initSol)
     while q:
         # Choose current candidate with best cost to go
         u = q.popitem()
-        # DEBUG
-        #print(u[1][1])
-        
-        #print(len(q))
-        if (nIterations % 1000) == 0:
-            # pass
-            print(nIterations)
-            print(len(q))
+
+        #if (nIterations % 1000) == 0:
+        #    print(nIterations)
+        #    print(len(q))
         nIterations = nIterations + 1
         
         # Branch by either adding, or not adding best node
@@ -72,14 +78,16 @@ def _solveBnB(inputFile,outputFile,returnDict):
         # DEBUG
         if withNode[1][2] > bestCover:
             bestCover = withNode[1][2]
-            print(f"Best Cover: {withNode[1][2]} : {withNode[1][1]}")
+            #print(f"Best Cover: {withNode[1][2]} : {withNode[1][1]}")
 
         # Check to see if all edges are now covered
         if withNode[1][2] == nEdges:
             # If so, check cost vs current best
             if len(withNode[1][1]) < bestCost:
                 bestCost = len(withNode[1][1])
-                print(f"NEW BEST COST FOUND!!! {len(withNode[1][1])}")
+                #print(f"NEW BEST COST FOUND!!! {len(withNode[1][1])}")
+                returnDict['coverSet'].append(withNode[1][1])
+                returnDict['solTime'].append(time.perf_counter()-startTime)
         elif withNode[1][2] > nEdges:
             raise
         else:
@@ -97,8 +105,8 @@ def _solveBnB(inputFile,outputFile,returnDict):
                 # if minimum cost to go is less than current best add to queue
                 q[nIterations+0.5] = withoutNode
         
-    print('Done!')
-    print(f"{nIterations} Iterations")
+    #print('Done!')
+    #print(f"{nIterations} Iterations")
 
 def lowerBound(q,nEdges):
     # get lower bound
