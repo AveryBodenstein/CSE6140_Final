@@ -52,6 +52,12 @@
 %\usepackage{graphicx}
 \usepackage[linesnumbered]{algorithm2e}
 
+\usepackage{listings}% http://ctan.org/pkg/listings
+\lstset{
+  basicstyle=\ttfamily,
+  mathescape
+}
+
 %%
 %% \BibTeX command to typeset BibTeX logo in the docs
 \AtBeginDocument{%
@@ -225,24 +231,39 @@
 
 \section{Introduction}
 
-short summary of the problem, the approach and the results you have obtained
+% short summary of the problem, the approach and the results you have obtained
 
-\lipsum[2-4]
+The Minimum Vertex Cover (MVC) problem is a classical NP-complete problem with a wide variety of real-world and theoretical applications. The problem consists of finding the smallest subset of vertices in a graph that includes at least one endpoint of every edge in the graph. It is the optimization version of the Vertex Cover problem, which instead asks if there exists a subset of vertices of size less than or equal to a given positive integer that includes at least one endpoint of every edge in the graph.
+
+The problem is in NP, meaning that a solution to the problem cannot be found with an algorithm that runs in polynomial time if P $\neq$ NP. Moreover, the problem is in NP-hard, meaning that every problem in NP is polynomially reducible to MVC (i.e. any instance of an NP problem can be converted into an instance of MVC in polynomial time). Since MVC is both in NP and NP-hard, it is also NP-complete, and was included as one of Karp's original 21 NP-complete problems \cite{karp1972reducibility}.
+
+In this project, we implemented and tested four different approaches to the Minimum Vertex Cover problem. The first approach is a Branch and Bound (BnB) algorithm which runs in exponential time in the worst-case but may perform significantly better than a brute force search and is guaranteed to provide an optimal solution. The second approach is a constructive heuristic algorithm, in particular the \textit{Greedy Independent Cover (GIC)} algorithm proposed by Halld\'{o}rsson and Radhakrishnan \cite{Hall97}, which runs in polynomial time and produces a solution with an approximation guarantee. The final two approaches are local search algorithms, one involving Simulated Annealing and the other involving Genetic Algorithms.
+
+\textbf{[Insert paragraph about results]}
 
 
 \section{Problem Definition}
 
-formal definition of the problem
-
-\lipsum[2-4]
-
+Given a graph $G = (V,E)$, a vertex cover of $G$ is a subset of vertices $A \subseteq V$ such that for every edge $(u,v) \in E$, $u \in A \lor v \in A$. The Minimum Vertex Cover problem is then the problem of finding a vertex cover $S$ of $G$ such that for every vertex cover $A$ of $G$, $|S| \leq |A|$, i.e. $S$ is the smallest vertex cover of $G$. In other words, the problem consists of finding a vertex cover of $G$ using as few vertices as possible.
 
 \section{Related Work}
 
-a short survey of existing work on the same problem, and important results in theory
-and practice
+% a short survey of existing work on the same problem, and important results in theory and practice
 
-\lipsum[2-4]
+The Vertex Cover problem was introduced in Karp's 21 NP-complete problems as the "Node Cover" problem \cite{karp1972reducibility}. The problem was defined as follows:
+\begin{lstlisting}
+NODE COVER
+INPUT: graph G', positive integer l
+PROPERTY: There is a set R $\subseteq$ N' such that |R| $\subseteq$ l and
+every arc is incident with some node in R.
+\end{lstlisting}
+
+As part of Karp's result that the Satisfiability problem is reducible to each of the other problems listed in the paper, he showed that the Clique problem is reducible to the Node Cover problem, and that the Node Cover problem is reducible to the Feedback Node Set problem, the Feedback Arc Set problem, the Directed Hamilton Circuit problem, and the Set Covering problem.
+
+Since its introduction, the Minimum Vertex Cover problem has had a wide range of theoretical and practical results related to it. In 1983, Bar-Yehuda and Even \cite{bar1983local} presented an algorithm that produces a solution to the problem with an approximation ratio of $2-\Theta(\frac{\log \log n}{\log n})$. A similar result was achieved by Monien and Speckenmeyer \cite{monien1985ramsey}.  
+With $\Delta$ as the maximal degree of the graph, Hochbaum \cite{hochbaum1983efficient} was able to approximate the problem with a ratio of $(2 - \frac{2}{\Delta})$. This result was improved by Halld\'{o}rsson and Radhakrishnan \cite{Hall97} whose algorithm achieves an approximation ratio of $2- \frac{\log \Delta + O(1)}{\Delta}$, and then again by Halperin \cite{halperin2002improved} who achieved an approximation ratio of $(2 - (1 - o(1)) \frac{2 \ln \ln \Delta}{\ln \Delta})$ by using semidefinite programming relaxations. This result was improved further by Karakostas \cite{karakostas2005better} who used an even stronger semidefinite programming relaxation to achieve an approximation ratio of $2 - \Theta (\frac{1}{\sqrt{\log n}})$.
+
+Several local search algorithms have been proposed for the Minimum Vertex Cover problem. One such algorithm is Edge Weighting Local Search (EWLS) \cite{cai2010ewls}, which is an iterated search algorithm based on the idea of extending a partial vertex cover into a full vertex cover. Another algorithm proposed for MVC is NuMVC \cite{cai2013numvc}, which uses a two-stage exchange strategy and edge weighting with forgetting to improve upon state-of-the-art algorithms. A stochastic local search algorithm named COVER (Cover Edges Randomly) \cite{richter2007stochastic}, which combines several heuristic criteria and a healthy dose of randomness to strike a balance between guided search and diversity.
 
 \section{Algorithms}
 
