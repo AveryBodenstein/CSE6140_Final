@@ -153,7 +153,9 @@ if __name__ == "__main__":
     warnings.filterwarnings("ignore")
 
     inputFile = './DATA-1/jazz.graph'
-    # inputFile = './DATA-1/karate.graph'    
+    # inputFile = './DATA-1/karate.graph'
+    inputFile = './DATA-1/football.graph'
+    # inputFile = './DATA-1/as-22july06.graph'
     # inputFile = './DATA-1/star2.graph'    
     # inputFile = './DATA-1/netscience.graph'
     adjacent,nodeEdges,nodeLabel,nNodes,nEdges = parse_graph(inputFile)
@@ -166,9 +168,17 @@ if __name__ == "__main__":
     # pop.sort(key=lambda x: x.fitness, reverse=True)
     # print(pop[0].fitness)
     # print(len(pop[0]))
+
+    time_limit = 10
+    start_time = time.perf_counter()
+
     high = nNodes
     low = 0
     while low < high:
+        cur_time = time.perf_counter()
+        if (cur_time - start_time > time_limit):
+            print("Out of time")
+            break
         mid = int((high + low) / 2)
         result, pop = geneticBinary(nNodes, indSize=mid, edgeList=edgeList, seed=100)
         print("Size:" + str(mid) + " Result:" + str(result))
