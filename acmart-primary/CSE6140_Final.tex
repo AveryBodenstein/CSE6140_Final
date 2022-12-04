@@ -393,7 +393,7 @@ Figure \ref{fig:approx_comp} shows a comparison between the approximation ratios
 
 The time complexity of the GIC algorithm as implemented is $O(n^2)$ where n is the number of nodes. As each node is selected via the minimum cardinality, at worst it has zero neighbors, so there would be at worst $n$ node selections. However in this case there would be 0 edge updates. For every neighbor that is present there are edge updates equal to the neighbors' cardinality. This can be at most $n-i$, where $i$ is the number of previous node selections. The complete complexity is then $O(\frac{n}{2}(n+1))$.
 
-\subsection{Local Search 1 (specific descriptor)}
+\subsection{Local Search 1 (Simulated Annealing)}
 
 \subsubsection{Description}
 

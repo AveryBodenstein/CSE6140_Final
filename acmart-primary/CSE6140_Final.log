@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.23 (TeX Live 2021/W32TeX) (preloaded format=pdflatex 2021.10.4)  4 DEC 2022 05:48
+This is pdfTeX, Version 3.141592653-2.6-1.40.23 (TeX Live 2021/W32TeX) (preloaded format=pdflatex 2021.10.4)  4 DEC 2022 05:53
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1321,13 +1321,19 @@ PNG copy)>] [17.17 <./power_boxplot_LS1.png (PNG copy)>] [18.18 <./star2_QRTD_L
 S1.png (PNG copy)>] [19.19 <./star2_SQD_LS1.png (PNG copy)>] [20.20 <./star2_bo
 xplot_LS1.png (PNG copy)>] [21.21 <./sample-franklin.png>] (./CSE6140_Final.aux
 )
-Package rerunfilecheck Info: File `CSE6140_Final.out' has not changed.
-(rerunfilecheck)             Checksum: DD7850EBEF3B3D9633CCBD6ACF317BA2;3041.
+
+Package rerunfilecheck Warning: File `CSE6140_Final.out' has changed.
+(rerunfilecheck)                Rerun to get outlines right
+(rerunfilecheck)                or use package `bookmark'.
+
+Package rerunfilecheck Info: Checksums for `CSE6140_Final.out':
+(rerunfilecheck)             Before: DD7850EBEF3B3D9633CCBD6ACF317BA2;3041
+(rerunfilecheck)             After:  5AAE551F732406E7959E10B6E44CA6C9;3041.
  ) 
 Here is how much of TeX's memory you used:
  23454 strings out of 478599
  364942 string characters out of 5858101
- 860906 words of memory out of 5000000
+ 860907 words of memory out of 5000000
  39997 multiletter control sequences out of 15000+600000
  632670 words of font info for 466 fonts, out of 8000000 for 9000
  1302 hyphenation exceptions out of 8191
@@ -1356,7 +1362,7 @@ LinLibertineTI.pfb><c:/texlive/2021/texmf-dist/fonts/type1/public/newtx/NewTXMI
 .pfb><c:/texlive/2021/texmf-dist/fonts/type1/public/newtx/txexs.pfb><c:/texlive
 /2021/texmf-dist/fonts/type1/public/newtx/txmiaX.pfb><c:/texlive/2021/texmf-dis
 t/fonts/type1/public/newtx/txsys.pfb>
-Output written on CSE6140_Final.pdf (21 pages, 825546 bytes).
+Output written on CSE6140_Final.pdf (21 pages, 825535 bytes).
 PDF statistics:
  532 PDF objects out of 1000 (max. 8388607)
  454 compressed objects within 5 object streams
