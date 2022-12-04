@@ -120,11 +120,11 @@ def solveLS1(inputFile,outputFile,maxTime,initSeed):
 
             T -= T_MAX/k
 
-    output_path = outputFile+'_LS1_'+str(maxTime)+'_'+str(initSeed)+'.sol'
+    output_path = outputFile+'.sol'
     with open(output_path, 'w') as file:
         file.write(str(best[0])+'\n')
         file.write(','.join(map(str, best[1])))
-    trace_path = outputFile+'_LS1_'+str(maxTime)+'_'+str(initSeed)+'.trace'
+    trace_path = outputFile+'.trace'
     with open(trace_path, 'w') as file:
         file.write(trace_str)
     print(best)
@@ -138,5 +138,7 @@ def solveLS1(inputFile,outputFile,maxTime,initSeed):
     print(len(edges) - E)
     '''
 
-
-solveLS1('DATA-1/power.graph', 'OUTPUT/power', 10, 666)
+if __name__ == "__main__":
+    for i in range(100):
+        graph_name = 'star2'
+        solveLS1(f'DATA-1/{graph_name}.graph', f'./{graph_name}_LS1_10_{i}', 10, i)
