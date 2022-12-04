@@ -1,14 +1,5 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-Created on Fri Nov 11 14:39:05 2022
-
-@author: Avery Bodenstein
-
-Local Search Vertex Cover Solver (2)
-Genetic Algorithms
-"""
-
 import copy
 import random
 import time
@@ -18,12 +9,14 @@ import numpy
 from commonLib import parse_graph
 from deap import base, creator, tools, algorithms
 
+# Build the adjacency list of the graph.
 def getAdjacencyList(nodeLabel, adjacent):
     adjDict = {}
     for i in range(len(nodeLabel)):
         adjDict[nodeLabel[i]] = adjacent[i]
     return adjDict
 
+# Create the edge list of the graph.
 def getEdgeList(adjacencyList, numberofNodes):
     edgeList = []
     for i in range(1, numberofNodes + 1):
@@ -32,6 +25,7 @@ def getEdgeList(adjacencyList, numberofNodes):
                 edgeList.append((i, j))
     return edgeList
 
+# The cost function, calculates the number of edges not present in the solution.
 def trueCost(currentSolution, edgeList, numNodes):
     if(len(currentSolution) == 0):
         return len(edgeList)
@@ -42,6 +36,7 @@ def trueCost(currentSolution, edgeList, numNodes):
             cost = cost + 1
     return (cost, )
 
+# Function to build the starting population.
 def initiate(container, func, n):
     starting_set = set()
     for i in range(n):
@@ -52,6 +47,8 @@ def initiate(container, func, n):
                 break
     return container(starting_set)
 
+# Mutation function.
+# Changes one element of the individual.
 def fixedSizeMutate(parent, low, up):
     if len(parent) == 0:
         return (parent,)
@@ -64,6 +61,7 @@ def fixedSizeMutate(parent, low, up):
             break
     return (child,)
 
+# A modified version of the DEAP library's easimple algorithm.
 def custom_eaSimple(population, toolbox, cxpb, mutpb, ngen, timeLimit=None,
             verbose=__debug__):
     start_time = None
@@ -95,7 +93,6 @@ def custom_eaSimple(population, toolbox, cxpb, mutpb, ngen, timeLimit=None,
             return True, population
 
         if gen - gen_best_fit > 30:
-            # print("Returning False")
             return False, population
 
         # Select the next generation individuals
@@ -119,9 +116,9 @@ def custom_eaSimple(population, toolbox, cxpb, mutpb, ngen, timeLimit=None,
         if verbose:
             print(str(gen) + " " + str(len(invalid_ind)) + " " + str(best_fit))
 
-    # print("best fit:" + str(best_fit))
     return False, population
 
+# Build the genetic algorithm components and run it.
 def geneticBinary(numNodes, indSize, edgeList, timeLimit=None):
     creator.create("FitnessMin", base.Fitness, weights=(-1.0,))
     creator.create("Individual", list, fitness=creator.FitnessMin)
@@ -138,7 +135,6 @@ def geneticBinary(numNodes, indSize, edgeList, timeLimit=None):
 
     pop = toolbox.population(n=1000)
 
-    # print("setup done")
     result, pop = custom_eaSimple(pop, toolbox, cxpb=0.5, mutpb=0.5, ngen=1000, timeLimit=timeLimit, verbose=False)
 
     return result, pop
@@ -149,7 +145,7 @@ def getNodeDegrees(nodeLabel, nodeEdges):
         degree[nodeLabel[i]] = nodeEdges[i]
     return degree
 
-
+# Implements a binary search decision problem genetic algorithm.
 def solveLS2(inputFile,outputFile=None,maxTime=600,initSeed=100):
     warnings.filterwarnings("ignore")
     random.seed(initSeed)
