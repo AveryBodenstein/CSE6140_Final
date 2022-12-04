@@ -12,6 +12,7 @@ Genetic Algorithms
 import copy
 import random
 import time
+import warnings
 
 import numpy
 from commonLib import parse_graph
@@ -63,8 +64,11 @@ def fixedSizeMutate(parent, low, up):
             break
     return (child,)
 
-def custom_eaSimple(population, toolbox, cxpb, mutpb, ngen, stats=None,
-             halloffame=None, verbose=__debug__):
+def custom_eaSimple(population, toolbox, cxpb, mutpb, ngen, timeLimit=None,
+            verbose=__debug__):
+    start_time = None
+    if timeLimit is not None:
+        start_time = time.perf_counter()
     # Evaluate the individuals with an invalid fitness
     invalid_ind = [ind for ind in population if not ind.fitness.valid]
     fitnesses = toolbox.map(toolbox.evaluate, invalid_ind)
@@ -76,14 +80,17 @@ def custom_eaSimple(population, toolbox, cxpb, mutpb, ngen, stats=None,
         if fit[0] < best_fit:
             best_fit = fit[0]
 
-    if halloffame is not None:
-        halloffame.update(population)
-
     if verbose:
         print("0 " + str(len(invalid_ind)) + " " + str(best_fit))
 
     # Begin the generational process
     for gen in range(1, ngen + 1):
+        if timeLimit is not None:
+            cur_time = time.perf_counter()
+            if (cur_time - start_time) > timeLimit:
+                print("Out of time")
+                break
+
         if best_fit == 0:
             return True, population
 
@@ -112,11 +119,10 @@ def custom_eaSimple(population, toolbox, cxpb, mutpb, ngen, stats=None,
         if verbose:
             print(str(gen) + " " + str(len(invalid_ind)) + " " + str(best_fit))
 
-    print("best fit:" + str(best_fit))
+    # print("best fit:" + str(best_fit))
     return False, population
 
-def geneticBinary(numNodes, indSize, edgeList, seed, timeLimit=None):
-    random.seed(seed)
+def geneticBinary(numNodes, indSize, edgeList, timeLimit=None):
     creator.create("FitnessMin", base.Fitness, weights=(-1.0,))
     creator.create("Individual", list, fitness=creator.FitnessMin)
 
@@ -133,7 +139,7 @@ def geneticBinary(numNodes, indSize, edgeList, seed, timeLimit=None):
     pop = toolbox.population(n=1000)
 
     # print("setup done")
-    result, pop = custom_eaSimple(pop, toolbox, cxpb=0.5, mutpb=0.5, ngen=1000, verbose=False)
+    result, pop = custom_eaSimple(pop, toolbox, cxpb=0.5, mutpb=0.5, ngen=1000, timeLimit=timeLimit, verbose=False)
 
     return result, pop
 
@@ -144,45 +150,50 @@ def getNodeDegrees(nodeLabel, nodeEdges):
     return degree
 
 
-def solveLS2(inputFile,outputFile,maxTime,initSeed):
-    pass
-
-import warnings
-
-if __name__ == "__main__":
+def solveLS2(inputFile,outputFile=None,maxTime=600,initSeed=100):
     warnings.filterwarnings("ignore")
+    random.seed(initSeed)
 
-    inputFile = './DATA-1/jazz.graph'
-    # inputFile = './DATA-1/karate.graph'
-    inputFile = './DATA-1/football.graph'
-    # inputFile = './DATA-1/as-22july06.graph'
-    # inputFile = './DATA-1/star2.graph'    
-    # inputFile = './DATA-1/netscience.graph'
     adjacent,nodeEdges,nodeLabel,nNodes,nEdges = parse_graph(inputFile)
     print(nNodes)
     print(nEdges)
     adjacencyList = getAdjacencyList(nodeLabel, adjacent)
     edgeList = getEdgeList(adjacencyList, nNodes)
     print("start")
-    # result, pop = geneticBinary(nNodes, indSize=int(899), edgeList=edgeList, seed=100)
-    # pop.sort(key=lambda x: x.fitness, reverse=True)
-    # print(pop[0].fitness)
-    # print(len(pop[0]))
 
-    time_limit = 10
     start_time = time.perf_counter()
-
     high = nNodes
     low = 0
     while low < high:
         cur_time = time.perf_counter()
-        if (cur_time - start_time > time_limit):
+        if (cur_time - start_time > maxTime):
             print("Out of time")
             break
         mid = int((high + low) / 2)
-        result, pop = geneticBinary(nNodes, indSize=mid, edgeList=edgeList, seed=100)
+        result, pop = geneticBinary(nNodes, indSize=mid, edgeList=edgeList, timeLimit=(start_time + maxTime - cur_time))
         print("Size:" + str(mid) + " Result:" + str(result))
         if result:
             high = mid-1
         else:
             low = mid+1
+
+
+
+if __name__ == "__main__":   
+
+    inputFile = './DATA-1/jazz.graph'
+    inputFile = './DATA-1/karate.graph'
+    # inputFile = './DATA-1/football.graph'
+    inputFile = './DATA-1/as-22july06.graph'
+    # inputFile = './DATA-1/star2.graph'    
+    # inputFile = './DATA-1/netscience.graph'
+    inputFile = './DATA-1/delaunay_n10.graph'
+
+    solveLS2(inputFile)
+    
+    # result, pop = geneticBinary(nNodes, indSize=int(899), edgeList=edgeList, seed=100)
+    # pop.sort(key=lambda x: x.fitness, reverse=True)
+    # print(pop[0].fitness)
+    # print(len(pop[0]))
+
+    
