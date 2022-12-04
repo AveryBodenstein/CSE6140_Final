@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.23 (TeX Live 2021/W32TeX) (preloaded format=pdflatex 2021.10.4)  4 DEC 2022 05:53
+This is pdfTeX, Version 3.141592653-2.6-1.40.23 (TeX Live 2021/W32TeX) (preloaded format=pdflatex 2021.10.4)  4 DEC 2022 05:56
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1321,14 +1321,8 @@ PNG copy)>] [17.17 <./power_boxplot_LS1.png (PNG copy)>] [18.18 <./star2_QRTD_L
 S1.png (PNG copy)>] [19.19 <./star2_SQD_LS1.png (PNG copy)>] [20.20 <./star2_bo
 xplot_LS1.png (PNG copy)>] [21.21 <./sample-franklin.png>] (./CSE6140_Final.aux
 )
-
-Package rerunfilecheck Warning: File `CSE6140_Final.out' has changed.
-(rerunfilecheck)                Rerun to get outlines right
-(rerunfilecheck)                or use package `bookmark'.
-
-Package rerunfilecheck Info: Checksums for `CSE6140_Final.out':
-(rerunfilecheck)             Before: DD7850EBEF3B3D9633CCBD6ACF317BA2;3041
-(rerunfilecheck)             After:  5AAE551F732406E7959E10B6E44CA6C9;3041.
+Package rerunfilecheck Info: File `CSE6140_Final.out' has not changed.
+(rerunfilecheck)             Checksum: 5AAE551F732406E7959E10B6E44CA6C9;3041.
  ) 
 Here is how much of TeX's memory you used:
  23454 strings out of 478599
@@ -1362,7 +1356,7 @@ LinLibertineTI.pfb><c:/texlive/2021/texmf-dist/fonts/type1/public/newtx/NewTXMI
 .pfb><c:/texlive/2021/texmf-dist/fonts/type1/public/newtx/txexs.pfb><c:/texlive
 /2021/texmf-dist/fonts/type1/public/newtx/txmiaX.pfb><c:/texlive/2021/texmf-dis
 t/fonts/type1/public/newtx/txsys.pfb>
-Output written on CSE6140_Final.pdf (21 pages, 825535 bytes).
+Output written on CSE6140_Final.pdf (21 pages, 825715 bytes).
 PDF statistics:
  532 PDF objects out of 1000 (max. 8388607)
  454 compressed objects within 5 object streams
