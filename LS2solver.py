@@ -135,6 +135,8 @@ def geneticBinary(numNodes, indSize, edgeList, timeLimit=None):
 
     pop_size = 1000
     num_gens = 1000
+    # Reduce generations and population size in larger graphs.
+    # Tradeoff to speed up computation.
     if numNodes > 2000:
         pop_size = 100
         num_gens = 200
@@ -176,6 +178,9 @@ def solveLS2(inputFile,outputFile=None,maxTime=600,initSeed=100):
 
     if nNodes > 4000:
         result, best_pop = geneticBinary(numNodes=nNodes, indSize=nNodes-10, edgeList=edgeList, timeLimit=maxTime)
+        if result and outputFile is not None:
+            write_time = time.perf_counter()
+            trace_file.write(str(write_time - start_time) + " " + str(nNodes-10) + "\n")
         high = nNodes - 11
 
     while low < high:
@@ -220,11 +225,21 @@ if __name__ == "__main__":
     # inputFile = './DATA-1/delaunay_n10.graph'
 
     # solveLS2(inputFile, outputFile="test_output")
-    solveLS2(inputFile, outputFile=None)
+    # solveLS2(inputFile, outputFile=None)
     
     # result, pop = geneticBinary(nNodes, indSize=int(899), edgeList=edgeList, seed=100)
     # pop.sort(key=lambda x: x.fitness, reverse=True)
     # print(pop[0].fitness)
     # print(len(pop[0]))
 
+    # files = ['./DATA-1/star2.graph', './DATA-1/power.graph']
+    # output_name = ['star2', 'power']
+    files = ['./DATA-1/star2.graph']
+    output_name = ['star2']
+    for index in range(len(files)):
+        for seed in range(10):
+            outputFile = output_name[index] + "_LS2_600_" + str(seed)
+            # print(files[index])
+            # print(outputFile)
+            solveLS2(inputFile=files[index], outputFile=outputFile, maxTime=600, initSeed=seed)
     
