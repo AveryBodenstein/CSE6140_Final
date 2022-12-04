@@ -154,12 +154,19 @@ def solveLS2(inputFile,outputFile=None,maxTime=600,initSeed=100):
     warnings.filterwarnings("ignore")
     random.seed(initSeed)
 
+    if outputFile is not None:
+        sol_file = open(outputFile + ".sol", "w")
+        trace_file = open(outputFile + ".trace", "w")
+
     adjacent,nodeEdges,nodeLabel,nNodes,nEdges = parse_graph(inputFile)
     print(nNodes)
     print(nEdges)
     adjacencyList = getAdjacencyList(nodeLabel, adjacent)
     edgeList = getEdgeList(adjacencyList, nNodes)
     print("start")
+
+    best_pop = None
+    best_sol = nNodes
 
     start_time = time.perf_counter()
     high = nNodes
@@ -174,8 +181,24 @@ def solveLS2(inputFile,outputFile=None,maxTime=600,initSeed=100):
         print("Size:" + str(mid) + " Result:" + str(result))
         if result:
             high = mid-1
+            write_time = time.perf_counter()
+            if outputFile is not None:
+                trace_file.write(str(write_time - start_time) + " " + str(mid) + "\n")
+            if mid < best_sol:
+                best_sol = mid 
+                best_pop = pop
         else:
             low = mid+1
+    
+    if outputFile is not None:
+        sol_file.write(str(best_sol) + "\n")
+        if best_pop is not None:
+            pop.sort(key=lambda x: x.fitness, reverse=True)
+            for item in pop[0]:
+                sol_file.write(str(item) + " ")
+        
+        sol_file.close()
+        trace_file.close()
 
 
 
@@ -184,12 +207,12 @@ if __name__ == "__main__":
     inputFile = './DATA-1/jazz.graph'
     inputFile = './DATA-1/karate.graph'
     # inputFile = './DATA-1/football.graph'
-    inputFile = './DATA-1/as-22july06.graph'
+    # inputFile = './DATA-1/as-22july06.graph'
     # inputFile = './DATA-1/star2.graph'    
     # inputFile = './DATA-1/netscience.graph'
-    inputFile = './DATA-1/delaunay_n10.graph'
+    # inputFile = './DATA-1/delaunay_n10.graph'
 
-    solveLS2(inputFile)
+    solveLS2(inputFile, outputFile="test_output")
     
     # result, pop = geneticBinary(nNodes, indSize=int(899), edgeList=edgeList, seed=100)
     # pop.sort(key=lambda x: x.fitness, reverse=True)
