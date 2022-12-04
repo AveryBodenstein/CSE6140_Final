@@ -1,0 +1,183 @@
+%%% -*-BibTeX-*-
+%%% Do NOT edit. File created by BibTeX with style
+%%% ACM-Reference-Format-Journals [18-Jan-2012].
+
+\begin{thebibliography}{12}
+
+%%% ====================================================================
+%%% NOTE TO THE USER: you can override these defaults by providing
+%%% customized versions of any of these macros before the \bibliography
+%%% command.  Each of them MUST provide its own final punctuation,
+%%% except for \shownote{}, \showDOI{}, and \showURL{}.  The latter two
+%%% do not use final punctuation, in order to avoid confusing it with
+%%% the Web address.
+%%%
+%%% To suppress output of a particular field, define its macro to expand
+%%% to an empty string, or better, \unskip, like this:
+%%%
+%%% \newcommand{\showDOI}[1]{\unskip}   % LaTeX syntax
+%%%
+%%% \def \showDOI #1{\unskip}           % plain TeX syntax
+%%%
+%%% ====================================================================
+
+\ifx \showCODEN    \undefined \def \showCODEN     #1{\unskip}     \fi
+\ifx \showDOI      \undefined \def \showDOI       #1{#1}\fi
+\ifx \showISBNx    \undefined \def \showISBNx     #1{\unskip}     \fi
+\ifx \showISBNxiii \undefined \def \showISBNxiii  #1{\unskip}     \fi
+\ifx \showISSN     \undefined \def \showISSN      #1{\unskip}     \fi
+\ifx \showLCCN     \undefined \def \showLCCN      #1{\unskip}     \fi
+\ifx \shownote     \undefined \def \shownote      #1{#1}          \fi
+\ifx \showarticletitle \undefined \def \showarticletitle #1{#1}   \fi
+\ifx \showURL      \undefined \def \showURL       {\relax}        \fi
+% The following commands are used for tagged output and should be
+% invisible to TeX
+\providecommand\bibfield[2]{#2}
+\providecommand\bibinfo[2]{#2}
+\providecommand\natexlab[1]{#1}
+\providecommand\showeprint[2][]{arXiv:#2}
+
+\bibitem[Avis and Imamura(2007)]%
+        {Avis06}
+\bibfield{author}{\bibinfo{person}{David Avis} {and} \bibinfo{person}{Tomokazu
+  Imamura}.} \bibinfo{year}{2007}\natexlab{}.
+\newblock \showarticletitle{A list heuristic for vertex cover}.
+\newblock \bibinfo{journal}{\emph{Operations Research Letters}}
+  \bibinfo{volume}{35}, \bibinfo{number}{2} (\bibinfo{year}{2007}),
+  \bibinfo{pages}{201--204}.
+\newblock
+\showISSN{0167-6377}
+\urldef\tempurl%
+\url{https://doi.org/10.1016/j.orl.2006.03.014}
+\showDOI{\tempurl}
+
+
+\bibitem[Bar-Yehuda and Even(1983)]%
+        {bar1983local}
+\bibfield{author}{\bibinfo{person}{Reuven Bar-Yehuda} {and}
+  \bibinfo{person}{Shimon Even}.} \bibinfo{year}{1983}\natexlab{}.
+\newblock \bibinfo{booktitle}{\emph{A local-ratio theorm for approximating the
+  weighted vertex cover problem}}.
+\newblock \bibinfo{type}{{T}echnical {R}eport}. \bibinfo{institution}{Computer
+  Science Department, Technion}.
+\newblock
+
+
+\bibitem[Cai et~al\mbox{.}(2010)]%
+        {cai2010ewls}
+\bibfield{author}{\bibinfo{person}{Shaowei Cai}, \bibinfo{person}{Kaile Su},
+  {and} \bibinfo{person}{Qingliang Chen}.} \bibinfo{year}{2010}\natexlab{}.
+\newblock \showarticletitle{EWLS: A new local search for minimum vertex cover}.
+  In \bibinfo{booktitle}{\emph{Twenty-Fourth AAAI Conference on Artificial
+  Intelligence}}.
+\newblock
+
+
+\bibitem[Cai et~al\mbox{.}(2013)]%
+        {cai2013numvc}
+\bibfield{author}{\bibinfo{person}{Shaowei Cai}, \bibinfo{person}{Kaile Su},
+  \bibinfo{person}{Chuan Luo}, {and} \bibinfo{person}{Abdul Sattar}.}
+  \bibinfo{year}{2013}\natexlab{}.
+\newblock \showarticletitle{NuMVC: An efficient local search algorithm for
+  minimum vertex cover}.
+\newblock \bibinfo{journal}{\emph{Journal of Artificial Intelligence Research}}
+   \bibinfo{volume}{46} (\bibinfo{year}{2013}), \bibinfo{pages}{687--716}.
+\newblock
+
+
+\bibitem[Delbot and Laforest(2010)]%
+        {Fran10}
+\bibfield{author}{\bibinfo{person}{Fran\c{c}ois Delbot} {and}
+  \bibinfo{person}{Christian Laforest}.} \bibinfo{year}{2010}\natexlab{}.
+\newblock \showarticletitle{Analytical and Experimental Comparison of Six
+  Algorithms for the Vertex Cover Problem}.
+\newblock \bibinfo{journal}{\emph{ACM J. Exp. Algorithmics}}
+  \bibinfo{volume}{15}, Article \bibinfo{articleno}{1.4} (\bibinfo{date}{nov}
+  \bibinfo{year}{2010}), \bibinfo{numpages}{27}~pages.
+\newblock
+\showISSN{1084-6654}
+\urldef\tempurl%
+\url{https://doi.org/10.1145/1671970.1865971}
+\showDOI{\tempurl}
+
+
+\bibitem[Halldórsson and Radhakrishnan(1997)]%
+        {Hall97}
+\bibfield{author}{\bibinfo{person}{Magnús Halldórsson} {and}
+  \bibinfo{person}{Jaikumar Radhakrishnan}.} \bibinfo{year}{1997}\natexlab{}.
+\newblock \showarticletitle{Greed is Good: Approximating Independent Sets in
+  Sparse and Bounded-Degree Graphs.}
+\newblock \bibinfo{journal}{\emph{Algorithmica}}  \bibinfo{volume}{18}
+  (\bibinfo{date}{05} \bibinfo{year}{1997}), \bibinfo{pages}{145--163}.
+\newblock
+\urldef\tempurl%
+\url{https://doi.org/10.1007/BF02523693}
+\showDOI{\tempurl}
+
+
+\bibitem[Halperin(2002)]%
+        {halperin2002improved}
+\bibfield{author}{\bibinfo{person}{Eran Halperin}.}
+  \bibinfo{year}{2002}\natexlab{}.
+\newblock \showarticletitle{Improved approximation algorithms for the vertex
+  cover problem in graphs and hypergraphs}.
+\newblock \bibinfo{journal}{\emph{SIAM J. Comput.}} \bibinfo{volume}{31},
+  \bibinfo{number}{5} (\bibinfo{year}{2002}), \bibinfo{pages}{1608--1623}.
+\newblock
+
+
+\bibitem[Hochbaum(1983)]%
+        {hochbaum1983efficient}
+\bibfield{author}{\bibinfo{person}{Dorit~S Hochbaum}.}
+  \bibinfo{year}{1983}\natexlab{}.
+\newblock \showarticletitle{Efficient bounds for the stable set, vertex cover
+  and set packing problems}.
+\newblock \bibinfo{journal}{\emph{Discrete Applied Mathematics}}
+  \bibinfo{volume}{6}, \bibinfo{number}{3} (\bibinfo{year}{1983}),
+  \bibinfo{pages}{243--254}.
+\newblock
+
+
+\bibitem[Karakostas(2005)]%
+        {karakostas2005better}
+\bibfield{author}{\bibinfo{person}{George Karakostas}.}
+  \bibinfo{year}{2005}\natexlab{}.
+\newblock \showarticletitle{A better approximation ratio for the vertex cover
+  problem}. In \bibinfo{booktitle}{\emph{International Colloquium on Automata,
+  Languages, and Programming}}. Springer, \bibinfo{pages}{1043--1050}.
+\newblock
+
+
+\bibitem[Karp(1972)]%
+        {karp1972reducibility}
+\bibfield{author}{\bibinfo{person}{Richard~M Karp}.}
+  \bibinfo{year}{1972}\natexlab{}.
+\newblock \showarticletitle{Reducibility among combinatorial problems}.
+\newblock In \bibinfo{booktitle}{\emph{Complexity of computer computations}}.
+  \bibinfo{publisher}{Springer}, \bibinfo{pages}{85--103}.
+\newblock
+
+
+\bibitem[Monien and Speckenmeyer(1985)]%
+        {monien1985ramsey}
+\bibfield{author}{\bibinfo{person}{Burkhard Monien} {and}
+  \bibinfo{person}{Ewald Speckenmeyer}.} \bibinfo{year}{1985}\natexlab{}.
+\newblock \showarticletitle{Ramsey numbers and an approximation algorithm for
+  the vertex cover problem}.
+\newblock \bibinfo{journal}{\emph{Acta Informatica}} \bibinfo{volume}{22},
+  \bibinfo{number}{1} (\bibinfo{year}{1985}), \bibinfo{pages}{115--123}.
+\newblock
+
+
+\bibitem[Richter et~al\mbox{.}(2007)]%
+        {richter2007stochastic}
+\bibfield{author}{\bibinfo{person}{Silvia Richter}, \bibinfo{person}{Malte
+  Helmert}, {and} \bibinfo{person}{Charles Gretton}.}
+  \bibinfo{year}{2007}\natexlab{}.
+\newblock \showarticletitle{A stochastic local search approach to vertex
+  cover}. In \bibinfo{booktitle}{\emph{annual conference on artificial
+  intelligence}}. Springer, \bibinfo{pages}{412--426}.
+\newblock
+
+
+\end{thebibliography}

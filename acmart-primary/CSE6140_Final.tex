@@ -397,44 +397,76 @@ The time complexity of the GIC algorithm as implemented is $O(n^2)$ where n is t
 
 \subsubsection{Description}
 
-\lipsum[1]
+The first local search algorithm we implement is simulated annealing. The main task is to find an appropriate cost evaluation function, and a definition of neighbor. 
+
+For the first question, we define the cost as $$|V'|+\alpha\; \texttt{number of edges uncovered}$$ 
+In the equation, $\alpha$ is a factor to define how important it is to cover all the edges while exploring new solutions. Then the main procedure is to start with an initial solution with a greedy algorithm and a large temperature, lower it gradually in each loop, find a neighbor and evaluate it, choose to switch to it or not using the probability given the evaluated cost change.
+
+For the second question, we define neighbor in this algorithm as a set of vertices that differ from the current set with exactly one vertex, that is, the neighbor either has one more vertex in the set, or has all but one vertex compared with the current one. Using this definition, we can possibly go to the optimal solution in the sense that it is connected to the initial solution via the neighbor relationship.
+
 
 \subsubsection{Pseudo Code}
 
 \begin{algorithm}[H]
-	\caption{merge}
+	\caption{Simulated Annealing}
 	\SetAlgoLined
-	\KwData{B,C}
-	$n_a$ = 0\;
-	i = len(B)\;
-	j = len(C)\;
-	A = [0]*(i+j-2)\;
-	\For{l = i+j-2; l $\geq$ 0; l-=1}{
-		\uIf{i == 0}{
-			A[0:l] = C[0:j]\;
-			return (A,$n_a$)
+	\KwData{V,E}
+	$init\_sol$ = init(V, E, neighbors)\;
+	$best$ = (len($init\_sol$), $init\_sol$)\;
+	$v\_set = init\_sol$\;
+	$edges$ = edges covered by $v\_set$\;
+	T = $T_{max}$\;
+	\While{T $> 0$}
+	{
+		$next$ = random\_of($\{1,2,\dots,|V|\}$)\;
+		$gain$ = 0\;
+		\If{$next \in v\_set$}
+		{
+			$gain += 1$\;
+			\For{$j \in neighbors[next]$}
+			{
+				\If{$j\notin v\_set$}{$gain -= \alpha$}
+			}
 		}
-		\uElseIf{j == 0}{
-			A[0:l] = B[0:i]\;
-			return (A,$n_a$)
+		\Else
+		{
+			$gain -= 1$\;
+			\For{$j \in neighbors[next]$}
+			{
+				\If{$j\notin v\_set$}{$gain += \alpha$}
+			}
 		}
-		
-		\uIf{C[j-1] $\geq$ B[i-1] }{
-			A[l] = C[j-1]\;
-			j = j-1\;
+		$p = \min\{1, e^{\frac{gain}{T}}\}$\;
+		\If{random(0,1) < $p$}
+		{
+			\If{$next \in v\_set$}
+			{
+				$v\_set$.remove($next$)\;
+				\For{$j \in neighbors[next]$}
+				{
+					\If{$j\notin v\_set$}{edges.remove($next, j$)}\;
+				}
+			}
+			\Else
+			{
+				$v\_set$.add($next$)\;
+				\For{$j \in neighbors[next]$}
+				{
+					\If{$j\notin v\_set$}{edges.add($next, j$)}
+				}
+			}
 		}
-		\uElse{
-			A[l] = B[i-1]\;
-			$n_a$ = $n_a$ + j\;
-			i = i-1\;
-		}
+		\If{len($edges$) == $|E|$ \textbf{and} len($v\_set$)<$best[0]$}{$best = (len(v\_set), v\_set)$}
+		$T -= T_{MAX}/k$\;
 	}
-	return (A,$n_a$)
+	return ($best$)
 \end{algorithm}
 
 \subsubsection{Algorithm Analysis}
 
-\lipsum[1]
+The pseudocode in last section shows how one whole loop of simulated annealing works, after each loop, if there's still more time available, the program simply start a new loop to try finding a better solution. Now let's analyze its time complexity of one complete loop. For a specific temperature, the main cost is for a randomly chosen vertex $next$, visiting all of its neighbors, which takes $O(|neighbors[next]|)$ time; then if the gain is positive or neighbor gets lucky, we update current vertex set and edge set, for which the main cost is also to visit all neighbors of $next$. Since this takes $k$ iterations, if we assume all vertices are visited almost evenly in long term, then on average the time complexity is $O(k|E|/|V| + |V| + |E|)$, where $|V|+|E|$ comes from the greedy algorithm to get the initial solution. As for space complexity, the main cost is to store the whole graph and the current vertex and edge set, which in total takes $O(|V|+|E|)$ space.\\\\
+
+Overall, the strength of this local search algorithm is time efficiency, since each complete loop only takes $O(k|E|/|V| + |V| + |E|)$ time; moreover, as said before, because it is possible to visit any neighbor, and the initial solution is connected to an optimal solution under the neighbor relationship, it is guaranteed possible to reach the optimal solution. On the other hand, because this algorithm takes many hyper parameters $T_{MAX}$, $k$, $\alpha$, it is hard to find a good setting of them, especially when it encounters another input graph.
 
 \subsection{Local Search 2 (specific descriptor)}
 
@@ -491,25 +523,60 @@ algorithm and how far is it from the true optimum? How about from your branch-an
 	\label{tab:freq}
 	\begin{tabular}{|l|c|c|c|c|c|c|c|c|c|c|c|c|c|}
 		\toprule
-		&\multicolumn{3}{c|}{Branch and Bound}&\multicolumn{3}{c|}{Construction Heuristic}&\multicolumn{3}{c|}{Local Search 1}&\multicolumn{3}{c|}{Local Search 2}\\
+		&\multicolumn{3}{c|}{Branch and Bound}&\multicolumn{3}{c|}{Construction Heuristic}&\multicolumn{3}{c|}{Local Search 1(avg of 10 runs)}&\multicolumn{3}{c|}{Local Search 2}\\
 		\midrule
 		Dataset&Time(s)&VC Value&RelErr&Time(s)&VC Value&RelErr&Time(s)&VC Value&RelErr&Time(s)&VC Value&RelErr&\\
 		\midrule
-		jazz&&&&0.0037&159&0.063&&&&&&\\
-		karate&&&&0.0005&14&0.00&&&&&&\\
-		football&&&&0.0014&95&0.011&&&&&&\\
-		as-22july06&&&&0.21&3303&0.00&&&&&&\\
-		hep-th&&&&0.098&3943&0.0043&&&&&&\\
-		star&&&&0.24&7069&0.024&&&&&&\\
-		star2&&&&0.21&4674&0.029&&&&&&\\
-		netscience&&&&0.017&901&0.0022&&&&&&\\
-		email&&&&0.015&604&0.017&&&&&&\\
-		delaunay n10&&&&0.012&733&0.043&&&&&&\\
-		power&&&&0.051&2226&0.010&&&&&&\\
+		jazz&&&&0.0037&159&0.063&2.82&158.1&0.00063&&&\\
+		karate&&&&0.0005&14&0.00&0.0.015&14.0&0.00&&&\\
+		football&&&&0.0014&95&0.011&0.48&94.0&0.00&&&\\
+		as-22july06&&&&0.21&3303&0.00&7.12&16729.1&4.06&&&\\
+		hep-th&&&&0.098&3943&0.0043&4.98&5665.9&0.44&&&\\
+		star&&&&0.24&7069&0.024&6.27&10440.8&0.51&&&\\
+		star2&&&&0.21&4674&0.029&5.14&12055.4&1.65&&&\\
+		netscience&&&&0.017&901&0.0022&4.68&986.3&0.097&&&\\
+		email&&&&0.015&604&0.017&4.04&687.3&0.15&&&\\
+		delaunay n10&&&&0.012&733&0.043&5.17&768.3&0.092&&&\\
+		power&&&&0.051&2226&0.010&5.91&3108.2&0.41&&&\\
 		\bottomrule
 	\end{tabular}
 \label{table:alg_perf}
 \end{table}
+
+
+\begin{figure}[p]
+	\includegraphics[width=\linewidth]{power_QRTD_LS1.png}
+	\caption{QRTD of Power, Local Search 1}
+\end{figure}
+
+
+\begin{figure}[p]
+	\includegraphics[width=\linewidth]{power_SQD_LS1.png}
+	\caption{SQD of Power, Local Search 1}
+\end{figure}
+
+\begin{figure}[p]
+	\includegraphics[width=\linewidth]{power_boxplot_LS1.png}
+	\caption{boxplot of Power, Local Search 1}
+\end{figure}
+
+
+\begin{figure}[p]
+	\includegraphics[width=\linewidth]{star2_QRTD_LS1.png}
+	\caption{QRTD of Star2, Local Search 1}
+\end{figure}
+
+
+\begin{figure}[p]
+	\includegraphics[width=\linewidth]{star2_SQD_LS1.png}
+	\caption{SQD of Star2, Local Search 1}
+\end{figure}
+
+\begin{figure}[p]
+	\includegraphics[width=\linewidth]{star2_boxplot_LS1.png}
+	\caption{boxplot of Star2, Local Search 1}
+\end{figure}
+
 
 
 \section{Discussion}
