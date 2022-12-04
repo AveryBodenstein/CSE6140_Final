@@ -67,7 +67,7 @@ def custom_eaSimple(population, toolbox, cxpb, mutpb, ngen, timeLimit=None,
     start_time = None
     if timeLimit is not None:
         start_time = time.perf_counter()
-    # Evaluate the individuals with an invalid fitness
+    # Evaluate the individuals with an invalid fitness.
     invalid_ind = [ind for ind in population if not ind.fitness.valid]
     fitnesses = toolbox.map(toolbox.evaluate, invalid_ind)
 
@@ -81,7 +81,7 @@ def custom_eaSimple(population, toolbox, cxpb, mutpb, ngen, timeLimit=None,
     if verbose:
         print("0 " + str(len(invalid_ind)) + " " + str(best_fit))
 
-    # Begin the generational process
+    # Begin the generational process.
     for gen in range(1, ngen + 1):
         if timeLimit is not None:
             cur_time = time.perf_counter()
@@ -95,13 +95,13 @@ def custom_eaSimple(population, toolbox, cxpb, mutpb, ngen, timeLimit=None,
         if gen - gen_best_fit > 30:
             return False, population
 
-        # Select the next generation individuals
+        # Select the next generation individuals.
         offspring = toolbox.select(population, len(population))
 
         # Vary the pool of individuals
         offspring = algorithms.varAnd(offspring, toolbox, cxpb, mutpb)
 
-        # Evaluate the individuals with an invalid fitness
+        # Evaluate the individuals with an invalid fitness.
         invalid_ind = [ind for ind in offspring if not ind.fitness.valid]
         fitnesses = toolbox.map(toolbox.evaluate, invalid_ind)
         for ind, fit in zip(invalid_ind, fitnesses):
@@ -110,7 +110,7 @@ def custom_eaSimple(population, toolbox, cxpb, mutpb, ngen, timeLimit=None,
                 best_fit = fit[0]
                 gen_best_fit = gen
 
-        # Replace the current population by the offspring
+        # Replace the current population by the offspring.
         population[:] = offspring
 
         if verbose:
@@ -133,9 +133,14 @@ def geneticBinary(numNodes, indSize, edgeList, timeLimit=None):
     toolbox.register("mutate", fixedSizeMutate, low=1, up=numNodes)
     toolbox.register("select", tools.selTournament, tournsize=4)
 
-    pop = toolbox.population(n=1000)
+    pop_size = 1000
+    num_gens = 1000
+    if numNodes > 2000:
+        pop_size = 100
+        num_gens = 200
+    pop = toolbox.population(n=pop_size)
 
-    result, pop = custom_eaSimple(pop, toolbox, cxpb=0.5, mutpb=0.5, ngen=1000, timeLimit=timeLimit, verbose=False)
+    result, pop = custom_eaSimple(pop, toolbox, cxpb=0.5, mutpb=0.5, ngen=num_gens, timeLimit=timeLimit, verbose=False)
 
     return result, pop
 
@@ -165,8 +170,14 @@ def solveLS2(inputFile,outputFile=None,maxTime=600,initSeed=100):
     best_sol = nNodes
 
     start_time = time.perf_counter()
+    
     high = nNodes
     low = 0
+
+    if nNodes > 4000:
+        result, best_pop = geneticBinary(numNodes=nNodes, indSize=nNodes-10, edgeList=edgeList, timeLimit=maxTime)
+        high = nNodes - 11
+
     while low < high:
         cur_time = time.perf_counter()
         if (cur_time - start_time > maxTime):
@@ -201,14 +212,15 @@ def solveLS2(inputFile,outputFile=None,maxTime=600,initSeed=100):
 if __name__ == "__main__":   
 
     inputFile = './DATA-1/jazz.graph'
-    inputFile = './DATA-1/karate.graph'
+    # inputFile = './DATA-1/karate.graph'
     # inputFile = './DATA-1/football.graph'
     # inputFile = './DATA-1/as-22july06.graph'
     # inputFile = './DATA-1/star2.graph'    
     # inputFile = './DATA-1/netscience.graph'
     # inputFile = './DATA-1/delaunay_n10.graph'
 
-    solveLS2(inputFile, outputFile="test_output")
+    # solveLS2(inputFile, outputFile="test_output")
+    solveLS2(inputFile, outputFile=None)
     
     # result, pop = geneticBinary(nNodes, indSize=int(899), edgeList=edgeList, seed=100)
     # pop.sort(key=lambda x: x.fitness, reverse=True)
