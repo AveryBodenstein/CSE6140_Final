@@ -599,7 +599,7 @@ The time and space complexity of the algorithm is calculated as follows:
 
 The branch and bound algorithm as well as the constructive heuristic algorithm were tested on a a platform with an i7 8750H and 16GB RAM running Ubuntu 20.4. The simulated annealing algorithm was tested on a platform with an AMD Ruben 5900HX and 32GB RAM running Windows 11. The genetic algorithm was tested on a platform with an i7 12700H and 16GB RAM running Windows 11.
 
-Each algorithm was run on 11 graph-based datasets. The algorithms were measured based on their total amount of wall-clock time to completion, the quality of the solution produced by the algorithm (i.e. the size of the vertex cover found, measured in nodes), and the relative error compared to the optimal solution. For the branch and bound algorithm, since the size of many of the datasets makes them prohibitively expensive/time-consuming to run to completion, the algorithm was cut off after a certain time threshold. Thus, in cases where the algorithm did not find an exact, optimal solution, we report the quality of the best solution it found, as well as the time it took to find that solution.
+Each algorithm was run on 11 graph-based datasets. The algorithms were measured based on their total amount of wall-clock time to completion, the quality of the solution produced by the algorithm (i.e. the size of the vertex cover found, measured in nodes), and the relative error compared to the optimal solution. For the branch and bound algorithm, since the size of many of the datasets makes them prohibitively expensive/time-consuming to run to completion, the algorithm was cut off after a certain time threshold. Thus, in cases where the algorithm did not find an exact, optimal solution, we report the quality of the best solution it found, as well as the time it took to find that solution. These results can be found in Table \ref{table:alg_perf}.
 
 \begin{table}[H]
 	\caption{Algorithm Performance}
@@ -676,6 +676,40 @@ Each algorithm was run on 11 graph-based datasets. The algorithms were measured 
 	\caption{boxplot of Star2, Local Search 1}
 \end{figure}
 
+% Local Search 2 plots
+
+\begin{figure}[p]
+	\includegraphics[width=\linewidth]{power_LS2_QRTD.png}
+	\caption{QRTD of Power, Local Search 2}
+\end{figure}
+
+
+\begin{figure}[p]
+	\includegraphics[width=\linewidth]{power_LS2_SQD.png}
+	\caption{SQD of Power, Local Search 2}
+\end{figure}
+
+\begin{figure}[p]
+	\includegraphics[width=\linewidth]{power_LS2_box.png}
+	\caption{boxplot of Power, Local Search 2}
+\end{figure}
+
+
+\begin{figure}[p]
+	\includegraphics[width=\linewidth]{star2_LS2_QRTD.png}
+	\caption{QRTD of Star2, Local Search 2}
+\end{figure}
+
+
+\begin{figure}[p]
+	\includegraphics[width=\linewidth]{star2_LS2_SQD.png}
+	\caption{SQD of Star2, Local Search 2}
+\end{figure}
+
+\begin{figure}[p]
+	\includegraphics[width=\linewidth]{star2_LS2_box.png}
+	\caption{boxplot of Star2, Local Search 2}
+\end{figure}
 
 
 \section{Discussion}
