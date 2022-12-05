@@ -188,7 +188,7 @@
   % article presents and explains many of the common variations, as well
   % as many of the formatting elements an author may use in the
   % preparation of the documentation of their work.
-  In this project, we implement and evaluate four different algorithms for solving the Minimum Vertex Cover problem: a branch and bound algorithm, a constructive heuristic algorithm, a simulated annealing algorithm, and a genetic algorithm. We found that the constructive heuristic algorithm achieved the overall best performance in terms of time and quality of solutions produced, with the branch and bound algorithm failing to improve upon the heuristic solution before the time cutoff and the local search algorithms incurring greater runtime and producing solutions of lower quality.
+  In this project, we implement and evaluate four different algorithms for solving the Minimum Vertex Cover problem: a branch and bound algorithm, a construction heuristic algorithm, a simulated annealing algorithm, and a genetic algorithm. We found that the construction heuristic algorithm achieved the overall best performance in terms of time and quality of solutions produced, with the branch and bound algorithm failing to improve upon the heuristic solution before the time cutoff and the local search algorithms incurring greater runtime and producing solutions of lower quality.
 \end{abstract}
 
 %%
@@ -239,9 +239,9 @@ The Minimum Vertex Cover (MVC) problem is a classical NP-complete problem with a
 
 The problem is in NP, meaning that a solution to the problem cannot be found with an algorithm that runs in polynomial time if P $\neq$ NP. Moreover, the problem is in NP-hard, meaning that every problem in NP is polynomially reducible to MVC (i.e. any instance of an NP problem can be converted into an instance of MVC in polynomial time). Since MVC is both in NP and NP-hard, it is also NP-complete, and was included as one of Karp's original 21 NP-complete problems \cite{karp1972reducibility}.
 
-In this project, we implemented and tested four different approaches to the Minimum Vertex Cover problem. The first approach is a branch and bound (BnB) algorithm which runs in exponential time in the worst-case but may perform significantly better than a brute force search and is guaranteed to provide an optimal solution. The second approach is a constructive heuristic algorithm, in particular the \textit{Greedy Independent Cover (GIC)} algorithm proposed by Halld\'{o}rsson and Radhakrishnan \cite{Hall97}, which runs in polynomial time and produces a solution with an approximation guarantee. The final two approaches are local search algorithms which run in polynomial time and produce solutions without a guarantee of quality. The first local search algorithm is based on simulated annealing, and the other is based on a genetic algorithm.
+In this project, we implemented and tested four different approaches to the Minimum Vertex Cover problem. The first approach is a branch and bound (BnB) algorithm which runs in exponential time in the worst-case but may perform significantly better than a brute force search and is guaranteed to provide an optimal solution. The second approach is a construction heuristic algorithm, in particular the \textit{Greedy Independent Cover (GIC)} algorithm proposed by Halld\'{o}rsson and Radhakrishnan \cite{Hall97}, which runs in polynomial time and produces a solution with an approximation guarantee. The final two approaches are local search algorithms which run in polynomial time and produce solutions without a guarantee of quality. The first local search algorithm is based on simulated annealing, and the other is based on a genetic algorithm.
 
-Overall, we found that the constructive heuristic algorithm exhibited the best performance, both in terms of runtime and quality of solution produced. The algorithm ran much faster than either of the two local search algorithms tested and produced solutions with very low relative error compared to the optimal solution. 
+Overall, we found that the construction heuristic algorithm exhibited the best performance, both in terms of runtime and quality of solution produced. The algorithm ran much faster than either of the two local search algorithms tested and produced solutions with very low relative error compared to the optimal solution. 
 
 
 \section{Problem Definition}
@@ -329,7 +329,7 @@ where P is the graph, $x_i$ are all the vertices in the cover set, and $y_i$ are
 
 The primary strength of the branch and bound algorithm is that, with sufficient time and computation, it will return the exact, optimal solution. This feature of the algorithm distinguishes it from the other three algorithms tested, each of which either provides a solution with an approximation guarantee or a solution with no guarantees whatsoever regarding its quality. Additionally, the branch and bound algorithm can often perform much better and consume far less time/space than a brute-force search if it manages to prune large sections of the search tree during its bounding operations.
 
-The main downside of the branch and bound algorithm is of course that the worst-case time/space complexity of the algorithm is still factorial, i.e. $O(n!)$ where $n$ is the number of nodes. While ideally the introduction of the lower bound would allow the algorithm to prune large parts of the search tree, in practice the algorithm may take just as long as a brute-force search to find the optimal solution.
+The main downside of the branch and bound algorithm is of course that the worst-case time/space complexity of the algorithm is still exponential, i.e. $O(2^n)$ where $n$ is the number of nodes. While ideally the introduction of the lower bound would allow the algorithm to prune large parts of the search tree, in practice the algorithm may take just as long as a brute-force search to find the optimal solution.
 
 \subsection{Construction Heuristic}
 
@@ -597,7 +597,7 @@ The time and space complexity of the algorithm is calculated as follows:
 
 % a detailed description of your platform (CPU, RAM, language, compiler, etc.), experimental procedure, evaluation criteria and obtained results (plots, tables, etc.). What is the lower bound on the optimal solution quality that you can drive from the results of your approximation algorithm and how far is it from the true optimum? How about from your branch-and-bound?
 
-The branch and bound algorithm as well as the constructive heuristic algorithm were tested on a a platform with an i7 8750H and 16GB RAM running Ubuntu 20.4. The simulated annealing algorithm was tested on a platform with an AMD Ruben 5900HX and 32GB RAM running Windows 11. The genetic algorithm was tested on a platform with an i7 12700H and 16GB RAM running Windows 11.
+The branch and bound algorithm as well as the construction heuristic algorithm were tested on a a platform with an i7 8750H and 16GB RAM running Ubuntu 20.4. The simulated annealing algorithm was tested on a platform with an AMD Ruben 5900HX and 32GB RAM running Windows 11. The genetic algorithm was tested on a platform with an i7 12700H and 16GB RAM running Windows 11.
 
 Each algorithm was run on 11 graph-based datasets. The algorithms were measured based on their total amount of wall-clock time to completion, the quality of the solution produced by the algorithm (i.e. the size of the vertex cover found, measured in nodes), and the relative error compared to the optimal solution. For the branch and bound algorithm, since the size of many of the datasets makes them prohibitively expensive/time-consuming to run to completion, the algorithm was cut off after a certain time threshold. Thus, in cases where the algorithm did not find an exact, optimal solution, we report the quality of the best solution it found, as well as the time it took to find that solution. These results can be found in Table \ref{table:alg_perf}.
 
@@ -648,11 +648,17 @@ Additionally, we provide the Qualified Runtime for various solution qualities (Q
 
 % a comparative analysis of how different algorithms perform with respect to your evaluation
 % criteria, or expected time complexity, etc
-\lipsum[2]
+Firstly, the results of the branch and bound algorithm and the construction heuristic algorithm invite comparison, as the quality of the solutions produced by the two for each dataset are equivalent. In other words, we can infer that for the vast majority of the datasets tested in our evaluation, the branch and bound algorithm was unable to finish before timing out, and it was unable to find a better solution than the one produced by the heuristic. As a result, the branch and bound algorithm produced solutions no better than those produced by the heuristic while also incurring greater runtimes.
+
+Secondly, we can compare the results of the two local search algorithms: simulated annealing and the genetic algorithm. Between the two, simulated annealing led to a high quality solution on nearly every dataset (except for the netscience and email datasets) and took dramatically less time to finish on all datasets, resulting in a speedup of over 10x or even 100x over the genetic algorithm. The divide between these two algorithms is also reflected in the plots in Appendix \ref{sec:local}. For example, in Figures 3 and 9, it is clear that simulated annealing runs reach a viable solution much more quickly than genetic algorithm runs, while in Figures 4 and 10, it is shown that simulated annealing runs produce solutions of higher quality than those of genetic algorithm runs given the same amount of time. These results align with expectations considering the differences in the theoretical complexities of both algorithms as described in their respective sections. Based on these results, we can conclude that simulated annealing is the local search algorithm with the highest overall performance of the algorithms we tested.
+
+Finally, we note that there is a clear gap in the performance between the branch and bound/heuristic methods and the local search methods. The former produce solutions of higher quality on most (but not all) datasets (exceptions being the jazz and football datasets, on which the simulated annealing algorithm performed best), and they achieve much faster runtimes on all datasets.
 
 
 \section{Conclusion}
-\lipsum[2]
+Based on the results that we found, we conclude that the construction heuristic algorithm implemented here -- the \textit{Greedy Independent Cover (GIC)} algorithm proposed by Halld\'{o}rsson and Radhakrishnan \cite{Hall97} -- is the overall best and most viable approach towards solving the Minimum Vertex Cover problem out of the four approaches we tested. The approach should be preferred unless an exact solution is needed, in which case the branch and bound algorithm may be preferable (though possibly unfeasible).
+
+There are several improvements to this project we could consider for future work. For example, we could test additional types of local search algorithms in addition to the ones presented here, such as a "hill climbing" algorithm. We could also work on optimizing the lower bound of the branch and bound algorithm in order to improve its performance and ideally produce substantively different results compared to the construction heuristic. Finally, we acknowledge that due to time constraints, the experiments for the various algorithms were conducted on different machines which may have adversely impacted the results; however we believe that the differences in computing power between the environments were small enough that they would not have changed the overall rankings/findings. A future study on algorithms for solving the Minimum Vertex Cover problem would ideally involve all experiments being run on the same machine to ensure consistency and validity of results. 
 
 %%
 %% The acknowledgments section is defined using the "acks" environment
@@ -677,70 +683,70 @@ We would like to thank Professor Wei Xu for teaching this course (CSE6140), as w
 
 \begin{figure}[h]
 	\includegraphics[width=\linewidth]{power_QRTD_LS1.png}
-	\caption{QRTD of Power, Local Search 1}
+	\caption{QRTD of Power, Simulated Annealing}
 \end{figure}
 
 
 \begin{figure}[h]
 	\includegraphics[width=\linewidth]{power_SQD_LS1.png}
-	\caption{SQD of Power, Local Search 1}
+	\caption{SQD of Power, Simulated Annealing}
 \end{figure}
 
 \begin{figure}[h]
 	\includegraphics[width=\linewidth]{power_boxplot_LS1.png}
-	\caption{boxplot of Power, Local Search 1}
+	\caption{boxplot of Power, Simulated Annealing}
 \end{figure}
 
 
 \begin{figure}[h]
 	\includegraphics[width=\linewidth]{star2_QRTD_LS1.png}
-	\caption{QRTD of Star2, Local Search 1}
+	\caption{QRTD of Star2, Simulated Annealing}
 \end{figure}
 
 
 \begin{figure}[h]
 	\includegraphics[width=\linewidth]{star2_SQD_LS1.png}
-	\caption{SQD of Star2, Local Search 1}
+	\caption{SQD of Star2, Simulated Annealing}
 \end{figure}
 
 \begin{figure}[h]
 	\includegraphics[width=\linewidth]{star2_boxplot_LS1.png}
-	\caption{boxplot of Star2, Local Search 1}
+	\caption{boxplot of Star2, Simulated Annealing}
 \end{figure}
 
 % Local Search 2 plots
 
 \begin{figure}[h]
 	\includegraphics[width=\linewidth]{power_LS2_QRTD.png}
-	\caption{QRTD of Power, Local Search 2}
+	\caption{QRTD of Power, Genetic Algorithm}
 \end{figure}
 
 
 \begin{figure}[h]
 	\includegraphics[width=\linewidth]{power_LS2_SQD.png}
-	\caption{SQD of Power, Local Search 2}
+	\caption{SQD of Power, Genetic Algorithm}
 \end{figure}
 
 \begin{figure}[h]
 	\includegraphics[width=\linewidth]{power_LS2_box.png}
-	\caption{boxplot of Power, Local Search 2}
+	\caption{boxplot of Power, Genetic Algorithm}
 \end{figure}
 
 
 \begin{figure}[h]
 	\includegraphics[width=\linewidth]{star2_LS2_QRTD.png}
-	\caption{QRTD of Star2, Local Search 2}
+	\caption{QRTD of Star2, Genetic Algorithm}
 \end{figure}
 
 
 \begin{figure}[h]
 	\includegraphics[width=\linewidth]{star2_LS2_SQD.png}
-	\caption{SQD of Star2, Local Search 2}
+	\caption{SQD of Star2, Genetic Algorithm}
 \end{figure}
 
 \begin{figure}[h]
 	\includegraphics[width=\linewidth]{star2_LS2_box.png}
-	\caption{boxplot of Star2, Local Search 2}
+	\caption{boxplot of Star2, Genetic Algorithm}
 \end{figure}
 
 \end{document}
