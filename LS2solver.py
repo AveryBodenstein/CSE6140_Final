@@ -138,8 +138,8 @@ def geneticBinary(numNodes, indSize, edgeList, timeLimit=None):
     # Reduce generations and population size in larger graphs.
     # Tradeoff to speed up computation.
     if numNodes > 2000:
-        pop_size = 100
-        num_gens = 200
+        pop_size = 10
+        num_gens = 100
     pop = toolbox.population(n=pop_size)
 
     result, pop = custom_eaSimple(pop, toolbox, cxpb=0.5, mutpb=0.5, ngen=num_gens, timeLimit=timeLimit, verbose=False)
