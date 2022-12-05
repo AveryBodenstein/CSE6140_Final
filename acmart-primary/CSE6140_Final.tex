@@ -276,23 +276,18 @@ The algorithms implemented in this project fall under one of three major paradig
 \subsection{Branch and Bound}
 
 \subsubsection{Description}
-
-The branch and bound approach is a non-polynomial time algorithm which is guaranteed to return an optimal solution. The BnB algorithm at worst does not perform any better than a brute force search, but can have significant performance gains where portions of the search space can be pruned. This pruning is performed by iteratively defining sub-problems and determining lower bounds on the cost to go for these sub-problems. If the best possible cost for a sub-problem exceeds the current best cost that subproblem (and therefore all it's derivatives) can be pruned from the search space. The sub-problems presented in this algorithm are defined based on inclusion or exclusion of nodes from the cover set. 
-
+The branch and bound approach is a non-polynomial time algorithm which is guaranteed to return an optimal solution. The BnB algorithm at worst does not perform any better than a brute force search, but can have significant performance gains where portions of the search space can be pruned. This pruning is performed by iteratively defining sub-problems and determining lower bounds on the cost to go for these sub-problems. If the best possible cost for a sub-problem exceeds the current best cost that subproblem (and therefore all it's derivatives) can be pruned from the search space. The sub-problems presented in this algorithm are defined based on inclusion or exclusion of nodes from the cover set.
 \newpage
 \subsubsection{Pseudo Code}
-
 -\\
-
 The overall branch and bound algorithm has the following structure:\\
-
 \begin{algorithm}[H]
 	\caption{Branch and Bound}
 	\SetAlgoLined
-	\KwData{P}
+	\KwData{Graph P=(V,E)}
 	
 	$F \leftarrow {(\emptyset,P)}$\;
-	$B \leftarrow {(+\infty,(\emptyset,P))}$\;
+	$B \leftarrow {(GIC(P),(\emptyset,P))}$\;
 	\While{F not empty}{
 		choose $(X,Y)$ in F\;
 		expand $(X,Y)$\;
@@ -313,23 +308,30 @@ The overall branch and bound algorithm has the following structure:\\
 	
 	return (B)
 \end{algorithm}
-
-where P is the graph, $x_i$ are all the vertices in the cover set, and $y_i$ are the vertices remaining for selection. There are four sub functions, "choose", "expand", "checkSolution", "checkDeadEnd", and "lowerBound". In the implementation presented here, choose selects the subproblem in F with the lowest lowerBound on cost to go. Expand takes that subproblem and returns two subproblems, one with the node with fewest unique edges selected and one without that node as a possible selection. checkSolution checks to see if all edges are covered by $x_i$. checkDeadEnd checks if $x_i \cup y_i$ covers all edges. Finally lowerBound runs the heuristic algorithm described in this report on $y_i$ then divides by the approximation ratio (2) to get a lower bound on the possible additional nodes required to cover all edges. This is then added to the number of nodes already in $x_i$.
-
-
-
-
+\begin{algorithm}[H]
+	\caption{Edge Delete}
+	\SetAlgoLined
+	\KwData{Graph P=(V,E)}
+	
+	$C \leftarrow \emptyset$\;
+	\While{$E \neq \emptyset$}{
+		select $(u,v) \in E$\;
+		C $\leftarrow$ C $\cup$ {u,v}\;
+		V $\leftarrow$ V - {u,v}\;
+	}
+	
+	return (B)
+\end{algorithm}
+where P is the graph, $x_i$ are all the vertices in the cover set, and $y_i$ are the vertices remaining for selection. There are four sub functions, "choose", "expand", "checkSolution", "checkDeadEnd", and "lowerBound". In the implementation presented here, choose selects the subproblem in F with the lowest lowerBound. Expand takes that subproblem and returns two subproblems, one with the node with fewest unique edges selected and one without that node as a possible selection. checkSolution checks to see if all edges are covered by $x_i$. checkDeadEnd checks if $x_i \cup y_i$ covers all edges. Finally lowerBound runs the edgeDelete heuristic algorithm described in \cite{Fran10} on $y_i$ then divides by the approximation ratio (2) to get a lower bound on the possible additional nodes required to cover all edges. This is then added to the number of nodes already in $x_i$.
+Note that edge deletion was selected due to it's high speed of calculation, it's low maximum Approximation Ratio (2), as well as the inherent assumptions in the algorithm. Based on the algorithmic description, the edge selected for deletion can be \textit{any} edge in G, therefore, in an attempt to drive the true approximation closer to the worst case approximation ratio an edge adjacent to the node with fewest current unique nodes is chosen.
+One final note on algorithm implementation, the Greedy Independent Cover heuristic is used to initially calculate an upper bound on the optimal solution cost, however since the GIC algorithm performs extremely well the BnB algorithm was unable to improve on the heuristic solution found in any of the tested graphs. The Jazz graph was the smallest graph for which the GIC heuristic solution did not produce an optimal cover, but even running that graph on a 12 threaded workstation the RAM was exhausted before an optimal solution was found ($>20$ minutes, $>6$M search iterations). This is somewhat unsurprising given the search space size ($2^{198}$ possible node combinations).
 \subsubsection{Algorithm Analysis}
-
 % Additional description\\
-
 % Gives exact solution\\
-
 % Time and space complexity\\
-
 The primary strength of the branch and bound algorithm is that, with sufficient time and computation, it will return the exact, optimal solution. This feature of the algorithm distinguishes it from the other three algorithms tested, each of which either provides a solution with an approximation guarantee or a solution with no guarantees whatsoever regarding its quality. Additionally, the branch and bound algorithm can often perform much better and consume far less time/space than a brute-force search if it manages to prune large sections of the search tree during its bounding operations.
-
-The main downside of the branch and bound algorithm is of course that the worst-case time/space complexity of the algorithm is still exponential, i.e. $O(2^n)$ where $n$ is the number of nodes. While ideally the introduction of the lower bound would allow the algorithm to prune large parts of the search tree, in practice the algorithm may take just as long as a brute-force search to find the optimal solution.
+The main downside of the branch and bound algorithm is of course that the worst-case time/space complexity of the algorithm is still factorial, i.e. $O(n^2)$ where $n$ is the number of nodes. While ideally the introduction of the lower bound would allow the algorithm to prune large parts of the search tree, in practice the algorithm may take just as long as a brute-force search to find the optimal solution.
+From a more practical perspective this algorithm can also be extremely resource intensive from a RAM perspective. Even with the heuristic lower bound pruning some subproblems depending on the size of the instance and the difficulty of pruning there may be hundreds of thousands of subproblems to store in memory while searching for the optimal solution.
 
 \subsection{Construction Heuristic}
 
