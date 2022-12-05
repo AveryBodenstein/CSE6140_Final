@@ -1,4 +1,4 @@
-This is BibTeX, Version 0.99d (TeX Live 2021/W32TeX)
+This is BibTeX, Version 0.99d (TeX Live 2019/Debian)
 Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
 The top-level auxiliary file: CSE6140_Final.aux
 The style file: ACM-Reference-Format.bst
@@ -6,12 +6,19 @@ Reallocated singl_function (elt_size=4) to 100 items from 50.
 Reallocated singl_function (elt_size=4) to 100 items from 50.
 Reallocated wiz_functions (elt_size=4) to 6000 items from 3000.
 Database file #1: sample-base.bib
-Warning--I didn't find a database entry for "Lamport:LaTeX"
 Reallocated singl_function (elt_size=4) to 100 items from 50.
+Warning--no key, author in mathworks_2012
+Warning--no author, editor, organization, or key in mathworks_2012
+Warning--to sort, need author or key in mathworks_2012
 Reallocated glb_str_ptr (elt_size=4) to 20 items from 10.
 Reallocated global_strs (elt_size=200001) to 20 items from 10.
 Reallocated glb_str_end (elt_size=4) to 20 items from 10.
+Warning--no key, author in mathworks_2012
+Warning--no key, author in mathworks_2012
 Reallocated singl_function (elt_size=4) to 100 items from 50.
+Warning--no key, author in mathworks_2012
+Warning--empty author in mathworks_2012
+Warning--empty address in back2018evolutionary
 Warning--empty publisher in cai2010ewls
 Warning--empty address in cai2010ewls
 Warning--page numbers missing in both pages and numpages fields in cai2010ewls
@@ -20,45 +27,45 @@ Warning--empty address in karakostas2005better
 Warning--empty address in karp1972reducibility
 Warning--empty publisher in richter2007stochastic
 Warning--empty address in richter2007stochastic
-You've used 12 entries,
+You've used 14 entries,
             5981 wiz_defined-function locations,
-            1716 strings with 22101 characters,
-and the built_in function-call counts, 13908 in all, are:
-= -- 1981
-> -- 324
+            1726 strings with 22378 characters,
+and the built_in function-call counts, 15372 in all, are:
+= -- 2122
+> -- 355
 < -- 0
-+ -- 112
-- -- 138
-* -- 855
-:= -- 1265
-add.period$ -- 61
-call.type$ -- 12
-change.case$ -- 73
-chr.to.int$ -- 12
-cite$ -- 20
-duplicate$ -- 1245
-empty$ -- 876
-format.name$ -- 160
-if$ -- 3506
++ -- 123
+- -- 147
+* -- 961
+:= -- 1395
+add.period$ -- 71
+call.type$ -- 14
+change.case$ -- 84
+chr.to.int$ -- 14
+cite$ -- 34
+duplicate$ -- 1397
+empty$ -- 986
+format.name$ -- 173
+if$ -- 3843
 int.to.chr$ -- 2
 int.to.str$ -- 1
-missing$ -- 43
-newline$ -- 144
-num.names$ -- 84
-pop$ -- 446
+missing$ -- 45
+newline$ -- 164
+num.names$ -- 91
+pop$ -- 520
 preamble$ -- 1
-purify$ -- 168
+purify$ -- 195
 quote$ -- 0
-skip$ -- 454
+skip$ -- 508
 stack$ -- 0
-substring$ -- 1132
-swap$ -- 129
+substring$ -- 1227
+swap$ -- 139
 text.length$ -- 19
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 262
-warning$ -- 8
-while$ -- 98
+type$ -- 307
+warning$ -- 16
+while$ -- 101
 width$ -- 0
-write$ -- 277
-(There were 9 warnings)
+write$ -- 317
+(There were 16 warnings)

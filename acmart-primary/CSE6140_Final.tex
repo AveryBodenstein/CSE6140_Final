@@ -319,7 +319,6 @@ The overall branch and bound algorithm has the following structure:\\
 		C $\leftarrow$ C $\cup$ {u,v}\;
 		V $\leftarrow$ V - {u,v}\;
 	}
-	
 	return (C)
 \end{algorithm}
 where P is the graph, $x_i$ are all the vertices in the cover set, and $y_i$ are the vertices remaining for selection. There are four sub functions, "choose", "expand", "checkSolution", "checkDeadEnd", and "lowerBound". In the implementation presented here, choose selects the subproblem in F with the lowest lowerBound. Expand takes that subproblem and returns two subproblems, one with the node with fewest unique edges selected and one without that node as a possible selection. checkSolution checks to see if all edges are covered by $x_i$. checkDeadEnd checks if $x_i \cup y_i$ covers all edges. Finally lowerBound runs the edgeDelete heuristic algorithm described in \cite{Fran10} on $y_i$ then divides by the approximation ratio (2) to get a lower bound on the possible additional nodes required to cover all edges. This is then added to the number of nodes already in $x_i$.

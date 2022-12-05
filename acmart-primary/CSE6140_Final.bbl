@@ -2,7 +2,7 @@
 %%% Do NOT edit. File created by BibTeX with style
 %%% ACM-Reference-Format-Journals [18-Jan-2012].
 
-\begin{thebibliography}{12}
+\begin{thebibliography}{14}
 
 %%% ====================================================================
 %%% NOTE TO THE USER: you can override these defaults by providing
@@ -37,6 +37,18 @@
 \providecommand\natexlab[1]{#1}
 \providecommand\showeprint[2][]{arXiv:#2}
 
+\bibitem[mat(2012)]%
+        {mathworks_2012}
+ \bibinfo{year}{2012}\natexlab{}.
+\newblock \bibinfo{title}{What Is the Genetic Algorithm?}
+\newblock
+\newblock
+\urldef\tempurl%
+\url{https://www.mathworks.com/help/gads/what-is-the-genetic-algorithm.html}
+\showURL{%
+\tempurl}
+
+
 \bibitem[Avis and Imamura(2007)]%
         {Avis06}
 \bibfield{author}{\bibinfo{person}{David Avis} {and} \bibinfo{person}{Tomokazu
@@ -50,6 +62,17 @@
 \urldef\tempurl%
 \url{https://doi.org/10.1016/j.orl.2006.03.014}
 \showDOI{\tempurl}
+
+
+\bibitem[B{\"a}ck et~al\mbox{.}(2018)]%
+        {back2018evolutionary}
+\bibfield{author}{\bibinfo{person}{Thomas B{\"a}ck}, \bibinfo{person}{David~B
+  Fogel}, {and} \bibinfo{person}{Zbigniew Michalewicz}.}
+  \bibinfo{year}{2018}\natexlab{}.
+\newblock \bibinfo{booktitle}{\emph{Evolutionary computation 1: Basic
+  algorithms and operators}}.
+\newblock \bibinfo{publisher}{CRC press}.
+\newblock
 
 
 \bibitem[Bar-Yehuda and Even(1983)]%
