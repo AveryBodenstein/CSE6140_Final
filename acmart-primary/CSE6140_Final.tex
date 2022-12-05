@@ -51,6 +51,7 @@
 %\usepackage{amssymb}
 %\usepackage{graphicx}
 \usepackage[linesnumbered]{algorithm2e}
+\usepackage{enumitem}
 
 \usepackage{listings}% http://ctan.org/pkg/listings
 \lstset{
@@ -181,12 +182,13 @@
 %% The abstract is a short summary of the work to be presented in the
 %% article.
 \begin{abstract}
-  A clear and well-documented \LaTeX\ document is presented as an
-  article formatted for publication by ACM in a conference proceedings
-  or journal publication. Based on the ``acmart'' document class, this
-  article presents and explains many of the common variations, as well
-  as many of the formatting elements an author may use in the
-  preparation of the documentation of their work.
+  % A clear and well-documented \LaTeX\ document is presented as an
+  % article formatted for publication by ACM in a conference proceedings
+  % or journal publication. Based on the ``acmart'' document class, this
+  % article presents and explains many of the common variations, as well
+  % as many of the formatting elements an author may use in the
+  % preparation of the documentation of their work.
+  In this project, we implement and evaluate four different algorithms for solving the Minimum Vertex Cover problem: a branch and bound algorithm, a constructive heuristic algorithm, a simulated annealing algorithm, and a genetic algorithm. We found that the constructive heuristic algorithm achieved the overall best performance in terms of time and quality of solutions produced, with the branch and bound algorithm failing to improve upon the heuristic solution before the time cutoff and the local search algorithms incurring greater runtime and producing solutions of lower quality.
 \end{abstract}
 
 %%
@@ -237,9 +239,9 @@ The Minimum Vertex Cover (MVC) problem is a classical NP-complete problem with a
 
 The problem is in NP, meaning that a solution to the problem cannot be found with an algorithm that runs in polynomial time if P $\neq$ NP. Moreover, the problem is in NP-hard, meaning that every problem in NP is polynomially reducible to MVC (i.e. any instance of an NP problem can be converted into an instance of MVC in polynomial time). Since MVC is both in NP and NP-hard, it is also NP-complete, and was included as one of Karp's original 21 NP-complete problems \cite{karp1972reducibility}.
 
-In this project, we implemented and tested four different approaches to the Minimum Vertex Cover problem. The first approach is a Branch and Bound (BnB) algorithm which runs in exponential time in the worst-case but may perform significantly better than a brute force search and is guaranteed to provide an optimal solution. The second approach is a constructive heuristic algorithm, in particular the \textit{Greedy Independent Cover (GIC)} algorithm proposed by Halld\'{o}rsson and Radhakrishnan \cite{Hall97}, which runs in polynomial time and produces a solution with an approximation guarantee. The final two approaches are local search algorithms, one involving Simulated Annealing and the other involving Genetic Algorithms.
+In this project, we implemented and tested four different approaches to the Minimum Vertex Cover problem. The first approach is a branch and bound (BnB) algorithm which runs in exponential time in the worst-case but may perform significantly better than a brute force search and is guaranteed to provide an optimal solution. The second approach is a constructive heuristic algorithm, in particular the \textit{Greedy Independent Cover (GIC)} algorithm proposed by Halld\'{o}rsson and Radhakrishnan \cite{Hall97}, which runs in polynomial time and produces a solution with an approximation guarantee. The final two approaches are local search algorithms which run in polynomial time and produce solutions without a guarantee of quality. The first local search algorithm is based on simulated annealing, and the other is based on a genetic algorithm.
 
-\textbf{[Insert paragraph about results]}
+Overall, we found that the constructive heuristic algorithm exhibited the best performance, both in terms of runtime and quality of solution produced. The algorithm ran much faster than either of the two local search algorithms tested and produced solutions with very low relative error compared to the optimal solution. 
 
 
 \section{Problem Definition}
@@ -267,11 +269,9 @@ Several local search algorithms have been proposed for the Minimum Vertex Cover 
 
 \section{Algorithms}
 
-Detailed description of each algorithm you have implemented, with pseudo-code, approx-
-imation guarantee (if any), time and space complexities, etc. What are the potential strengths and
-weaknesses of each type of approach? Did you use any kind of automated tuning or configuration for
-your local search? Why and how you chose your local search approaches and their components? Please
-cite any sources of information that you used to inform your algorithm design
+%Detailed description of each algorithm you have implemented, with pseudo-code, approximation guarantee (if any), time and space complexities, etc. What are the potential strengths and weaknesses of each type of approach? Did you use any kind of automated tuning or configuration for your local search? Why and how you chose your local search approaches and their components? Please cite any sources of information that you used to inform your algorithm design
+
+The algorithms implemented in this project fall under one of three major paradigms. The first is the Branch and Bound paradigm which constructs solutions one element at a time and prunes candidates from the search tree if the lower bound of their solution quality is worse than that of the current best solution seen. The second is the Approximation paradigm, in which the runtime of the algorithm is prioritized and optimized for by allowing the quality of the resulting solution to be worse than that of the optimal one up to a specified ratio. The last is the Local Search paradigm which starts at an initial point in the search space and iteratively traverses to neighboring points according to a specified evaluation function. Within this paradigm we chose to 
 
 \subsection{Branch and Bound}
 
@@ -321,11 +321,15 @@ where P is the graph, $x_i$ are all the vertices in the cover set, and $y_i$ are
 
 \subsubsection{Algorithm Analysis}
 
-Additional description\\
+% Additional description\\
 
-Gives exact solution\\
+% Gives exact solution\\
 
-Time and space complexity\\
+% Time and space complexity\\
+
+The primary strength of the branch and bound algorithm is that, with sufficient time and computation, it will return the exact, optimal solution. This feature of the algorithm distinguishes it from the other three algorithms tested, each of which either provides a solution with an approximation guarantee or a solution with no guarantees whatsoever regarding its quality. Additionally, the branch and bound algorithm can often perform much better and consume far less time/space than a brute-force search if it manages to prune large sections of the search tree during its bounding operations.
+
+The main downside of the branch and bound algorithm is of course that the worst-case time/space complexity of the algorithm is still factorial, i.e. $O(n!)$ where $n$ is the number of nodes. While ideally the introduction of the lower bound would allow the algorithm to prune large parts of the search tree, in practice the algorithm may take just as long as a brute-force search to find the optimal solution.
 
 \subsection{Construction Heuristic}
 
@@ -379,7 +383,7 @@ Where N(u) is the neighborhood (all adjacent vertices to) u.\\
 
 As discussed in Delbot and Laforest [2010] \cite{Fran10} the Greedy Independent Cover algorithm performs extremely well. As can be seen in table \ref{table:alg_perf} the relative error for GIC never exceeds 6\% (and this is on the Jazz graph where the estimated solution is only 1 node larger than the optimal solution). However, the disadvantage of GIC is that the worst case performance is relatively poor. As shown in Avis and Imamura [2007] \cite{Avis06}, the approximation ratio is at least $\frac{\sqrt{\Delta}}{2}$ where $\Delta$ is the maximum degree in G.
 
-Figure \ref{fig:approx_comp} shows a comparison between the approximation ratios of several common algorithms described in \cite{Fran10}. Note that while GIC performs quite well, it's approximation ratio exceeds Depth First Search, or either of the Edge Deletion bounds for any $\Delta$ above 16.
+Figure \ref{fig:approx_comp} shows a comparison between the approximation ratios of several common algorithms described in \cite{Fran10}. Note that while GIC performs quite well, its approximation ratio exceeds Depth First Search, or either of the Edge Deletion bounds for any $\Delta$ above 16.
 
 \begin{figure}[h]
 	\centering
@@ -397,17 +401,24 @@ The time complexity of the GIC algorithm as implemented is $O(n^2)$ where n is t
 
 \subsubsection{Description}
 
-The first local search algorithm we implement is simulated annealing. The main task is to find an appropriate cost evaluation function, and a definition of neighbor. 
+The first local search algorithm we implemented is simulated annealing. The main task is to find an appropriate cost evaluation function, and to define the neighborhood.
 
 For the first question, we define the cost as $$|V'|+\alpha\; \texttt{number of edges uncovered}$$ 
-In the equation, $\alpha$ is a factor to define how important it is to cover all the edges while exploring new solutions. Then the main procedure is to start with an initial solution with a greedy algorithm and a large temperature, lower it gradually in each loop, find a neighbor and evaluate it, choose to switch to it or not using the probability given the evaluated cost change.
+In the equation, $\alpha$ is a factor that defines how important it is to cover all the edges while exploring new solutions. Then the main procedure is to start with an initial solution with a greedy algorithm and a large temperature, lower it gradually in each loop, find a neighbor and evaluate it, choose to switch to it or not using the probability given the evaluated cost change.
 
-For the second question, we define neighbor in this algorithm as a set of vertices that differ from the current set with exactly one vertex, that is, the neighbor either has one more vertex in the set, or has all but one vertex compared with the current one. Using this definition, we can possibly go to the optimal solution in the sense that it is connected to the initial solution via the neighbor relationship.
-
+For the second question, we define a neighbor in this algorithm as a set of vertices that differ from the current set with exactly one vertex, that is, the neighbor either has one more vertex in the set, or has all but one vertex compared with the current one. Using this definition, we can possibly go to the optimal solution in the sense that it is connected to the initial solution via the neighbor relationship.
 
 \subsubsection{Pseudo Code}
 
-\begin{algorithm}[H]
+-\\
+
+The simulated annealing algorithm has the following structure:\\
+
+\begin{frame}{}
+  \begin{center}
+    \scalebox{0.8}{
+    \begin{minipage}{0.7\linewidth}
+      \begin{algorithm}[H]
 	\caption{Simulated Annealing}
 	\SetAlgoLined
 	\KwData{V,E}
@@ -461,83 +472,171 @@ For the second question, we define neighbor in this algorithm as a set of vertic
 	}
 	return ($best$)
 \end{algorithm}
+    \end{minipage}%
+    }
+  \end{center}
+
+\end{frame}
+
+% \begin{algorithm}[H]
+% 	\caption{Simulated Annealing}
+% 	\SetAlgoLined
+% 	\KwData{V,E}
+% 	$init\_sol$ = init(V, E, neighbors)\;
+% 	$best$ = (len($init\_sol$), $init\_sol$)\;
+% 	$v\_set = init\_sol$\;
+% 	$edges$ = edges covered by $v\_set$\;
+% 	T = $T_{max}$\;
+% 	\While{T $> 0$}
+% 	{
+% 		$next$ = random\_of($\{1,2,\dots,|V|\}$)\;
+% 		$gain$ = 0\;
+% 		\If{$next \in v\_set$}
+% 		{
+% 			$gain += 1$\;
+% 			\For{$j \in neighbors[next]$}
+% 			{
+% 				\If{$j\notin v\_set$}{$gain -= \alpha$}
+% 			}
+% 		}
+% 		\Else
+% 		{
+% 			$gain -= 1$\;
+% 			\For{$j \in neighbors[next]$}
+% 			{
+% 				\If{$j\notin v\_set$}{$gain += \alpha$}
+% 			}
+% 		}
+% 		$p = \min\{1, e^{\frac{gain}{T}}\}$\;
+% 		\If{random(0,1) < $p$}
+% 		{
+% 			\If{$next \in v\_set$}
+% 			{
+% 				$v\_set$.remove($next$)\;
+% 				\For{$j \in neighbors[next]$}
+% 				{
+% 					\If{$j\notin v\_set$}{edges.remove($next, j$)}\;
+% 				}
+% 			}
+% 			\Else
+% 			{
+% 				$v\_set$.add($next$)\;
+% 				\For{$j \in neighbors[next]$}
+% 				{
+% 					\If{$j\notin v\_set$}{edges.add($next, j$)}
+% 				}
+% 			}
+% 		}
+% 		\If{len($edges$) == $|E|$ \textbf{and} len($v\_set$)<$best[0]$}{$best = (len(v\_set), v\_set)$}
+% 		$T -= T_{MAX}/k$\;
+% 	}
+% 	return ($best$)
+% \end{algorithm}
 
 \subsubsection{Algorithm Analysis}
 
-The pseudocode in last section shows how one whole loop of simulated annealing works, after each loop, if there's still more time available, the program simply start a new loop to try finding a better solution. Now let's analyze its time complexity of one complete loop. For a specific temperature, the main cost is for a randomly chosen vertex $next$, visiting all of its neighbors, which takes $O(|neighbors[next]|)$ time; then if the gain is positive or neighbor gets lucky, we update current vertex set and edge set, for which the main cost is also to visit all neighbors of $next$. Since this takes $k$ iterations, if we assume all vertices are visited almost evenly in long term, then on average the time complexity is $O(k|E|/|V| + |V| + |E|)$, where $|V|+|E|$ comes from the greedy algorithm to get the initial solution. As for space complexity, the main cost is to store the whole graph and the current vertex and edge set, which in total takes $O(|V|+|E|)$ space.\\\\
+The pseudocode in the last section shows how one whole loop of simulated annealing works, after each loop, if there's still more time available, the program simply starts a new loop to try finding a better solution. Now let's analyze its time complexity of one complete loop. For a specific temperature, the main cost is for a randomly chosen vertex $next$, visiting all of its neighbors, which takes $O(|neighbors[next]|)$ time; then if the gain is positive or a neighbor gets lucky, we update current vertex set and edge set, for which the main cost is also to visit all neighbors of $next$. Since this takes $k$ iterations, if we assume all vertices are visited almost evenly in long term, then on average the time complexity is $O(k|E|/|V| + |V| + |E|)$, where $|V|+|E|$ comes from the greedy algorithm to get the initial solution. As for space complexity, the main cost is to store the whole graph and the current vertex and edge set, which in total takes $O(|V|+|E|)$ space.\\\\
 
-Overall, the strength of this local search algorithm is time efficiency, since each complete loop only takes $O(k|E|/|V| + |V| + |E|)$ time; moreover, as said before, because it is possible to visit any neighbor, and the initial solution is connected to an optimal solution under the neighbor relationship, it is guaranteed possible to reach the optimal solution. On the other hand, because this algorithm takes many hyper parameters $T_{MAX}$, $k$, $\alpha$, it is hard to find a good setting of them, especially when it encounters another input graph. Another weakness is the low speed of convergence to the optimal solution-- because of how neighbor is defined, each iteration updates at most one vertex, which makes it hard to converge to the potentially very different optimal solution.
+Overall, the strength of this local search algorithm is time efficiency, since each complete loop only takes $O(k|E|/|V| + |V| + |E|)$ time; moreover, as said before, because it is possible to visit any neighbor, and the initial solution is connected to an optimal solution under the neighbor relationship, it is guaranteed possible to reach the optimal solution. On the other hand, because this algorithm takes many hyper parameters $T_{MAX}$, $k$, $\alpha$, it is hard to find a good setting of them, especially when it encounters another input graph. Another weakness is the low speed of convergence to the optimal solution -- because of how neighbor is defined, each iteration updates at most one vertex, which makes it hard to converge to the potentially very different optimal solution.
 
-\subsection{Local Search 2 (specific descriptor)}
+\subsection{Local Search 2 (Genetic Algorithm)}
 
 \subsubsection{Description}
 
-\lipsum[1]
+Genetic algorithms are used to solve constrained and unconstrained optimization problems. They are based on how evolution and natural selection happen in biology. It initializes an initial population, selects certain ones from them to be parents based on some criteria, mates and mutates them and moves on to the next generation. 
 
-\subsubsection{Pseudo Code}
+\begin{figure}[h]
+	\includegraphics[width=0.4\linewidth]{genetic_diagram.png}
+	\caption{Steps of a genetic algorithm \cite{mathworks_2012}}
+\end{figure}
 
-\begin{algorithm}[H]
-	\caption{merge}
-	\SetAlgoLined
-	\KwData{B,C}
-	$n_a$ = 0\;
-	i = len(B)\;
-	j = len(C)\;
-	A = [0]*(i+j-2)\;
-	\For{l = i+j-2; l $\geq$ 0; l-=1}{
-		\uIf{i == 0}{
-			A[0:l] = C[0:j]\;
-			return (A,$n_a$)
-		}
-		\uElseIf{j == 0}{
-			A[0:l] = B[0:i]\;
-			return (A,$n_a$)
-		}
-		
-		\uIf{C[j-1] $\geq$ B[i-1] }{
-			A[l] = C[j-1]\;
-			j = j-1\;
-		}
-		\uElse{
-			A[l] = B[i-1]\;
-			$n_a$ = $n_a$ + j\;
-			i = i-1\;
-		}
-	}
-	return (A,$n_a$)
-\end{algorithm}
+The approach we have used here is a decision version of the problem, with the additional logic of a binary search to arrive at the best possible result within the fixed time limit.
+
+\subsubsection{Implementation}
+This project uses the DEAP library\footnote{https://deap.readthedocs.io/en/master/index.html} which provides convenient wrappers for genetic algorithms. However, it should be noted that custom functions and logic have been used for the actual initiation, evaluation and mutation. The algorithm implemented is first defined in \cite{back2018evolutionary}. DEAP library documentation also provided the boilerplate code.
+
+\subsubsection{Optimizations}
+Due to the nature of genetic algorithms, convergence can be quite slow, and with large graphs there are tradeoffs to be made between speed and optimization. Some of the choices we made are listed below:
+
+\begin{itemize}[topsep=\parskip]
+  \item Reducing the number of generations and initial population size for larger graphs. The tradeoff here is lower accuracy, but it helps speed up computation.
+  \item We keep a high bar for making a decision and only consider a positive result if it has converged. However, convergence rates can be slow and by the last generation if it hasn’t converged yet it can often be ambiguous. We consider that to be a negative outcome. This helps avoid false positives.
+  \item A number of different mating and selection strategies offered by the DEAP library were explored and the ones which converged fastest were chosen.
+\end{itemize}
 
 \subsubsection{Algorithm Analysis}
+Genetic algorithms boast several advantages. Due to its stochastic nature and initialization of a population of many points as opposed to one, genetic algorithms are robust against environments with large amounts of noise and can overcome local minima/maxima better than similar algorithms. They are also easy to understand/conceptualize due to their roots in evolutionary biology and clear real-life analogues. Lastly, genetic algorithms can be easily parellelized, allowing one to cut down on the total runtime of the algorithm.
 
-\lipsum[1]
+The main weakness of genetic algorithms is that they are often computationally expensive and more time-consuming than other classes of algorithms. Additionally, there is no guarantee regarding the quality of the solution produced by a genetic algorithm. While its stochastic nature may allow it to avoid local optima, it can also make it unreliable and lead to low-quality solutions.
+
+The time and space complexity of the algorithm is calculated as follows:
+\vspace{-.5cm}
+\begin{align*}
+    \textnormal{Complexity} &= \textnormal{Cost of Binary Search} * \textnormal{Cost of the Genetic Algorithm}\\
+    &= O(\log V) * \textnormal{Cost of the Genetic Algorithm}\\
+    &= O(\log V) * [\textnormal{Cost of Initialization} + \textnormal{Number of Generations} * \textnormal{Population Size} * \\
+    &(\textnormal{Cost of Selection} + \textnormal{Cost of Mating} + \textnormal{Cost of Mutating} + \textnormal{Cost of Evaluation})]\\
+    &= O(\log V) * [(\textnormal{Population Size} * O(V) + \textnormal{Number of Generations} * \textnormal{Population Size} * \\
+    &(O(E) + O(V) + O(1) + O(E))]\\
+    &= O(\log V * \textnormal{Number of Generations} * \textnormal{Population Size} * (V + E))\\
+\end{align*}
+
+% $$
+% \begin{aligned}
+%     \textnormal{Complexity} &= \textnormal{Cost of Binary Search} * \textnormal{Cost of the Genetic Algorithm}\\
+%     &= O(\log V) * \textnormal{Cost of the Genetic Algorithm}\\
+%     &= O(\log V) * [\textnormal{Cost of Initialization} + \textnormal{Number of Generations} * \textnormal{Population Size} * \\
+%     &(\textnormal{Cost of Selection} + \textnormal{Cost of Mating} + \textnormal{Cost of Mutating} + \textnormal{Cost of Evaluation})]\\
+%     &= O(\log V) * [(\textnormal{Population Size} * O(V) + \textnormal{Number of Generations} * \textnormal{Population Size} * \\
+%     &(O(E) + O(V) + O(1) + O(E))]\\
+%     &= O(\log V * \textnormal{Number of Generations} * \textnormal{Population Size} * (V + E))\\
+% \end{aligned}
+% $$
 
 \section{Empirical Evaluation}
 
-a detailed description of your platform (CPU, RAM, language, compiler, etc.),
-experimental procedure, evaluation criteria and obtained results (plots, tables, etc.). What is the
-lower bound on the optimal solution quality that you can drive from the results of your approximation
-algorithm and how far is it from the true optimum? How about from your branch-and-bound?
+% a detailed description of your platform (CPU, RAM, language, compiler, etc.), experimental procedure, evaluation criteria and obtained results (plots, tables, etc.). What is the lower bound on the optimal solution quality that you can drive from the results of your approximation algorithm and how far is it from the true optimum? How about from your branch-and-bound?
+
+The branch and bound algorithm as well as the constructive heuristic algorithm were tested on a a platform with an i7 8750H and 16GB RAM running Ubuntu 20.4. The simulated annealing algorithm was tested on a platform with an AMD Ruben 5900HX and 32GB RAM running Windows 11. The genetic algorithm was tested on a platform with an i7 12700H and 16GB RAM running Windows 11.
+
+Each algorithm was run on 11 graph-based datasets. The algorithms were measured based on their total amount of wall-clock time to completion, the quality of the solution produced by the algorithm (i.e. the size of the vertex cover found, measured in nodes), and the relative error compared to the optimal solution. For the branch and bound algorithm, since the size of many of the datasets makes them prohibitively expensive/time-consuming to run to completion, the algorithm was cut off after a certain time threshold. Thus, in cases where the algorithm did not find an exact, optimal solution, we report the quality of the best solution it found, as well as the time it took to find that solution.
 
 \begin{table}[H]
 	\caption{Algorithm Performance}
 	\label{tab:freq}
-	\begin{tabular}{|l|c|c|c|c|c|c|c|c|c|c|c|c|c|}
+	\begin{tabular}{|l|c|c|c|c|c|c|}
 		\toprule
-		&\multicolumn{3}{c|}{Branch and Bound}&\multicolumn{3}{c|}{Construction Heuristic}&\multicolumn{3}{c|}{Local Search 1(avg of 10 runs)}&\multicolumn{3}{c|}{Local Search 2}\\
+		&\multicolumn{3}{c|}{Branch and Bound}&\multicolumn{3}{c|}{Construction Heuristic}\\
 		\midrule
-		Dataset&Time(s)&VC Value&RelErr&Time(s)&VC Value&RelErr&Time(s)&VC Value&RelErr&Time(s)&VC Value&RelErr&\\
+		Dataset&Time(s)&VC Value&RelErr&Time(s)&VC Value&RelErr\\
 		\midrule
-		jazz&&&&0.0037&159&0.063&2.82&158.1&0.00063&&&\\
-		karate&&&&0.0005&14&0.00&0.0.015&14.0&0.00&&&\\
-		football&&&&0.0014&95&0.011&0.48&94.0&0.00&&&\\
-		as-22july06&&&&0.21&3303&0.00&7.12&16729.1&4.06&&&\\
-		hep-th&&&&0.098&3943&0.0043&4.98&5665.9&0.44&&&\\
-		star&&&&0.24&7069&0.024&6.27&10440.8&0.51&&&\\
-		star2&&&&0.21&4674&0.029&5.14&12055.4&1.65&&&\\
-		netscience&&&&0.017&901&0.0022&4.68&986.3&0.097&&&\\
-		email&&&&0.015&604&0.017&4.04&687.3&0.15&&&\\
-		delaunay n10&&&&0.012&733&0.043&5.17&768.3&0.092&&&\\
-		power&&&&0.051&2226&0.010&5.91&3108.2&0.41&&&\\
+		jazz&0.0054&159&0.063&0.0037&159&0.063\\
+		karate&0.0011&14&0.00&0.0005&14&0.00\\
+		football&0.0038&95&0.011&0.0014&95&0.011\\
+		as-22july06&0.34&3303&0.00&0.21&3303&0.00\\
+		hep-th&0.14&3943&0.0043&0.098&3943&0.0043\\
+		star&0.27&7069&0.024&0.24&7069&0.024\\
+		star2&0.24&4674&0.029&0.21&4674&0.029\\
+		netscience&0.023&901&0.0022&0.017&901&0.0022\\
+		email&0.024&604&0.017&0.015&604&0.017\\
+		delaunay n10&0.016&733&0.043&0.012&733&0.043\\
+		power&0.071&2226&0.010&0.051&2226&0.010\\
+        \midrule
+        &\multicolumn{3}{c|}{Simulated Annealing (avg of 10 runs)}&\multicolumn{3}{c|}{Genetic Algorithm (avg of 10 runs)}\\
+        \midrule
+        Dataset&Time(s)&VC Value&RelErr&Time(s)&VC Value&RelErr\\
+		\midrule
+        jazz&2.82&158.1&0.00063&81.03&162&0.025316\\
+		karate&0.015&14.0&0.00&2.12&14&0\\
+		football&0.48&94.0&0.00&16.22&97&0.031915\\
+        as-22july06&7.12&16729.1&4.06&1158.76&21697&5.56887\\
+		hep-th&4.98&5665.9&0.44&460.23&7259&0.848956\\
+		star&6.27&10440.8&0.51&1080.91&10431&0.511301\\
+		star2&5.14&12055.4&1.65&720.55&13217&1.909952\\
+		netscience&4.68&986.3&0.097&1018.63&943&0.048943\\
+		email&4.04&687.3&0.15&668.84&672&0.131313\\
+		delaunay n10&5.17&768.3&0.092&1042.15&772&0.098151\\
+		power&5.91&3108.2&0.41&790.75&4094&0.858375\\
 		\bottomrule
 	\end{tabular}
 \label{table:alg_perf}
@@ -586,143 +685,6 @@ criteria, or expected time complexity, etc
 
 
 \section{Conclusion}
-
-
-
-\section{Math Equations}
-You may want to display math equations in three distinct styles:
-inline, numbered or non-numbered display.  Each of the three are
-discussed in the next sections.
-
-\subsection{Inline (In-text) Equations}
-A formula that appears in the running text is called an inline or
-in-text formula.  It is produced by the \textbf{math} environment,
-which can be invoked with the usual
-\texttt{{\char'134}begin\,\ldots{\char'134}end} construction or with
-the short form \texttt{\$\,\ldots\$}. You can use any of the symbols
-and structures, from $\alpha$ to $\omega$, available in
-\LaTeX~\cite{Lamport:LaTeX}; this section will simply show a few
-examples of in-text equations in context. Notice how this equation:
-\begin{math}
-  \lim_{n\rightarrow \infty}x=0
-\end{math},
-set here in in-line math style, looks slightly different when
-set in display style.  (See next section).
-
-\subsection{Display Equations}
-A numbered display equation---one set off by vertical space from the
-text and centered horizontally---is produced by the \textbf{equation}
-environment. An unnumbered display equation is produced by the
-\textbf{displaymath} environment.
-
-Again, in either environment, you can use any of the symbols and
-structures available in \LaTeX\@; this section will just give a couple
-of examples of display equations in context.  First, consider the
-equation, shown as an inline equation above:
-\begin{equation}
-  \lim_{n\rightarrow \infty}x=0
-\end{equation}
-Notice how it is formatted somewhat differently in
-the \textbf{displaymath}
-environment.  Now, we'll enter an unnumbered equation:
-\begin{displaymath}
-  \sum_{i=0}^{\infty} x + 1
-\end{displaymath}
-and follow it with another numbered equation:
-\begin{equation}
-  \sum_{i=0}^{\infty}x_i=\int_{0}^{\pi+2} f
-\end{equation}
-just to demonstrate \LaTeX's able handling of numbering.
-
-\section{Figures}
-
-The ``\verb|figure|'' environment should be used for figures. One or
-more images can be placed within a figure. If your figure contains
-third-party material, you must clearly identify it as such, as shown
-in the example below.
-\begin{figure}[h]
-  \centering
-  \includegraphics[width=\linewidth]{sample-franklin}
-  \caption{1907 Franklin Model D roadster. Photograph by Harris \&
-    Ewing, Inc. [Public domain], via Wikimedia
-    Commons. (\url{https://goo.gl/VLCRBB}).}
-  \Description{A woman and a girl in white dresses sit in an open car.}
-\end{figure}
-
-Your figures should contain a caption which describes the figure to
-the reader.
-
-Figure captions are placed {\itshape below} the figure.
-
-Every figure should also have a figure description unless it is purely
-decorative. These descriptions convey what’s in the image to someone
-who cannot see it. They are also used by search engine crawlers for
-indexing images, and when images cannot be loaded.
-
-A figure description must be unformatted plain text less than 2000
-characters long (including spaces).  {\bfseries Figure descriptions
-  should not repeat the figure caption – their purpose is to capture
-  important information that is not already provided in the caption or
-  the main text of the paper.} For figures that convey important and
-complex new information, a short text description may not be
-adequate. More complex alternative descriptions can be placed in an
-appendix and referenced in a short figure description. For example,
-provide a data table capturing the information in a bar chart, or a
-structured list representing a graph.  For additional information
-regarding how best to write figure descriptions and why doing this is
-so important, please see
-\url{https://www.acm.org/publications/taps/describing-figures/}.
-
-\section{Citations and Bibliographies}
-
-The use of \BibTeX\ for the preparation and formatting of one's
-references is strongly recommended. Authors' names should be complete
---- use full first names (``Donald E. Knuth'') not initials
-(``D. E. Knuth'') --- and the salient identifying features of a
-reference should be included: title, year, volume, number, pages,
-article DOI, etc.
-
-The bibliography is included in your source document with these two
-commands, placed just before the \verb|\end{document}| command:
-\begin{verbatim}
-  \bibliographystyle{ACM-Reference-Format}
-  \bibliography{bibfile}
-\end{verbatim}
-where ``\verb|bibfile|'' is the name, without the ``\verb|.bib|''
-suffix, of the \BibTeX\ file.
-
-Citations and references are numbered by default. A small number of
-ACM publications have citations and references formatted in the
-``author year'' style; for these exceptions, please include this
-command in the {\bfseries preamble} (before the command
-``\verb|\begin{document}|'') of your \LaTeX\ source:
-\begin{verbatim}
-  \citestyle{acmauthoryear}
-\end{verbatim}
-
-
-  Some examples.  A paginated journal article \cite{Fran10} \cite{Avis06} \cite{Hall97}
-
-\section{Acknowledgments}
-
-Identification of funding sources and other support, and thanks to
-individuals and groups that assisted in the research and the
-preparation of the work should be included in an acknowledgment
-section, which is placed just before the reference section in your
-document.
-
-This section has a special environment:
-\begin{verbatim}
-  \begin{acks}
-  ...
-  \end{acks}
-\end{verbatim}
-so that the information contained therein can be more easily collected
-during the article metadata extraction phase, and to ensure
-consistency in the spelling of the section heading.
-
-Authors should not prepare this section as a numbered or unnumbered {\verb|\section|}; please use the ``{\verb|acks|}'' environment.
-
 
 %%
 %% The acknowledgments section is defined using the "acks" environment
